@@ -60,6 +60,12 @@ public final class CacheRegistry {
             .withAdditionalData("ambient")
             .withClassName("EntityBat")).load();
 
+    public static final Class<?> ENTITY_BEE_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("animal")
+            .withClassName("EntityBee")).load();
+
     public static final Class<?> ENTITY_BLAZE_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
             .withCategory(CacheCategory.ENTITY)
@@ -78,6 +84,12 @@ public final class CacheRegistry {
             .withAdditionalData("animal")
             .withClassName("EntityChicken")).load();
 
+    public static final Class<?> ENTITY_COD_CLASS = new ClazzLoader(
+            new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+                    .withCategory(CacheCategory.ENTITY)
+                    .withAdditionalData("animal")
+                    .withClassName("EntityCod")).load();
+
     public static final Class<?> ENTITY_COW_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
             .withCategory(CacheCategory.ENTITY)
@@ -89,6 +101,30 @@ public final class CacheRegistry {
             .withCategory(CacheCategory.ENTITY)
             .withAdditionalData("monster")
             .withClassName("EntityCreeper")).load();
+
+    public static final Class<?> ENTITY_DOLPHIN_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("animal")
+            .withClassName("EntityDolphin")).load();
+
+    public static final Class<?> ENTITY_DONKEY_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("animal.horse")
+            .withClassName("EntityHorseDonkey")).load();
+
+    public static final Class<?> ENTITY_DROWNED_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityDrowned")).load();
+
+    public static final Class<?> ENTITY_ELDER_GUARDIAN_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityGuardianElder")).load();
 
     public static final Class<?> ENTITY_ENDER_DRAGON_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
@@ -114,11 +150,23 @@ public final class CacheRegistry {
             .withAdditionalData("monster")
             .withClassName("EntityEndermite")).load();
 
+    public static final Class<?> ENTITY_EVOKER_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityEvoker")).load();
+
     public static final Class<?> ENTITY_GHAST_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
             .withCategory(CacheCategory.ENTITY)
             .withAdditionalData("monster")
             .withClassName("EntityGhast")).load();
+
+    public static final Class<?> ENTITY_GLOW_SQUID_CLASS = new ClazzLoader(
+       new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("animal.glowsquid")
+            .withClassName("GlowSquid")).load();
 
     public static final Class<?> ENTITY_IRON_GOLEM_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
@@ -138,11 +186,29 @@ public final class CacheRegistry {
             .withAdditionalData("monster")
             .withClassName("EntityGuardian")).load();
 
+    public static final Class<?> ENTITY_HOGLIN_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityHoglin")).load();
+
     public static final Class<?> ENTITY_HORSE_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
             .withCategory(CacheCategory.ENTITY)
             .withAdditionalData("animal.horse")
             .withClassName("EntityHorse")).load();
+
+    public static final Class<?> ENTITY_HUSK_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityZombieHusk")).load();
+
+    public static final Class<?> ENTITY_ILLUSIONER_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityIllagerIllusioner")).load();
 
     public static final Class<?> ENTITY_LLAMA_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
@@ -155,6 +221,12 @@ public final class CacheRegistry {
             .withCategory(CacheCategory.ENTITY)
             .withAdditionalData("monster")
             .withClassName("EntityMagmaCube")).load();
+
+    public static final Class<?> ENTITY_MULE_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("animal.horse")
+            .withClassName("EntityHorseMule")).load();
 
     public static final Class<?> ENTITY_MUSHROOM_COW_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
@@ -174,11 +246,35 @@ public final class CacheRegistry {
             .withAdditionalData("animal")
             .withClassName("EntityParrot")).load();
 
+    public static final Class<?> ENTITY_PHANTOM_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityPhantom")).load();
+
     public static final Class<?> ENTITY_PIG_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
             .withCategory(CacheCategory.ENTITY)
             .withAdditionalData("animal")
             .withClassName("EntityPig")).load();
+
+    public static final Class<?> ENTITY_PIGLIN_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster.piglin")
+            .withClassName("EntityPiglin")).load();
+
+    public static final Class<?> ENTITY_PIGLIN_BRUTE_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster.piglin")
+            .withClassName("EntityPiglinBrute")).load();
+
+    public static final Class<?> ENTITY_PILLAGER_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityPillager")).load();
 
     public static final Class<?> ENTITY_RABBIT_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
@@ -192,11 +288,23 @@ public final class CacheRegistry {
             .withAdditionalData("animal")
             .withClassName("EntityPolarBear")).load();
 
+    public static final Class<?> ENTITY_PUFFERFISH_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("animal")
+            .withClassName("EntityPufferFish")).load();
+
     public static final Class<?> ENTITY_PANDA_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
             .withCategory(CacheCategory.ENTITY)
             .withAdditionalData("animal")
             .withClassName("EntityPanda")).load();
+
+    public static final Class<?> ENTITY_SALMON_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("animal")
+            .withClassName("EntitySalmon")).load();
 
     public static final Class<?> ENTITY_SHEEP_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
@@ -228,6 +336,12 @@ public final class CacheRegistry {
             .withAdditionalData("monster")
             .withClassName("EntitySkeleton")).load();
 
+    public static final Class<?> ENTITY_STRAY_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntitySkeletonStray")).load();
+
     public static final Class<?> ENTITY_SLIME_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
             .withCategory(CacheCategory.ENTITY)
@@ -246,11 +360,47 @@ public final class CacheRegistry {
             .withAdditionalData("animal")
             .withClassName("EntitySquid")).load();
 
+    public static final Class<?> ENTITY_STRIDER_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("animal")
+            .withClassName("EntityStrider")).load();
+
+    public static final Class<?> ENTITY_TROPICAL_FISH_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("animal")
+            .withClassName("EntityTropicalFish")).load();
+
+    public static final Class<?> ENTITY_TURTLE_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("animal")
+            .withClassName("EntityTurtle")).load();
+
+    public static final Class<?> ENTITY_VEX_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityVex")).load();
+
     public static final Class<?> ENTITY_VILLAGER_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
             .withCategory(CacheCategory.ENTITY)
             .withAdditionalData("npc")
             .withClassName("EntityVillager")).load();
+
+    public static final Class<?> ENTITY_VINDICATOR_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityVindicator")).load();
+
+    public static final Class<?> ENTITY_WANDERING_TRADER_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("npc")
+            .withClassName("EntityVillagerTrader")).load();
 
     public static final Class<?> ENTITY_WITCH_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
@@ -264,11 +414,41 @@ public final class CacheRegistry {
             .withAdditionalData("boss.wither")
             .withClassName("EntityWither")).load();
 
+    public static final Class<?> ENTITY_WITHER_SKELETON_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntitySkeletonWither")).load();
+
+    public static final Class<?> ENTITY_ZOGLIN_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityZoglin")).load();
+
     public static final Class<?> ENTITY_ZOMBIE_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
             .withCategory(CacheCategory.ENTITY)
             .withAdditionalData("monster")
             .withClassName("EntityZombie")).load();
+
+    public static final Class<?> ENTITY_ZOMBIE_HORSE_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityHorseZombie")).load();
+
+    public static final Class<?> ENTITY_ZOMBIE_VILLAGER_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityZombieVillager")).load();
+
+    public static final Class<?> ENTITY_ZOMBIFIED_PIGLIN_CLASS = new ClazzLoader(
+        new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)
+            .withCategory(CacheCategory.ENTITY)
+            .withAdditionalData("monster")
+            .withClassName("EntityPigZombie")).load();
 
     public static final Class<?> ENTITY_WOLF_CLASS = new ClazzLoader(
         new TypeCache.CacheBuilder(CachePackage.MINECRAFT_SERVER)

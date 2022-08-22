@@ -2,10 +2,12 @@ package io.github.znetworkw.znpcservers.cache;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -13,505 +15,311 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public interface TypeCache {
-    /**
-     * A cache for storing loaded classes.
-     */
-    class ClassCache {
-        /**
-         * A map containing the cached objects & classes.
-         */
-        protected static final ConcurrentMap<CacheKey, Object> CACHE = new ConcurrentHashMap<>();
+    public abstract static class BaseCache<T> {
+        private static final Logger LOGGER = Logger.getLogger(TypeCache.BaseCache.class.getName());
+        protected final TypeCache.CacheBuilder cacheBuilder;
+        protected Class<?> BUILDER_CLASS;
+        private T cached;
 
-        /**
-         * Locates a cached type by its name.
-         *
-         * @param name        The type class name.
-         * @param objectClass The type class.
-         * @return The cached object or {@code null} if no type was found.
-         */
-        public static Object find(String name, Class<?> objectClass) {
-            return CACHE.get(new CacheKey(name, objectClass));
-        }
-
-        /**
-         * Registers a new type key into the cache.
-         *
-         * @param name        The type class name.
-         * @param object      The type value.
-         * @param objectClass The type class.
-         */
-        public static void register(String name, Object object, Class<?> objectClass) {
-            CACHE.putIfAbsent(new CacheKey(name, objectClass), object);
-        }
-
-        /**
-         * A cache key for storing a class type.
-         */
-        private static class CacheKey {
-            /**
-             * The key class type.
-             */
-            private final Class<?> type;
-
-            /**
-             * The key name.
-             */
-            private final String value;
-
-            /**
-             * Creates a new cache key.
-             *
-             * @param value The key type name.
-             * @param type  The key class type.
-             */
-            public CacheKey(String value,
-                            Class<?> type) {
-                this.type = type;
-                this.value = value;
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                if (o == null || getClass() != o.getClass()) return false;
-                CacheKey classKey = (CacheKey) o;
-                return Objects.equals(type, classKey.type) && Objects.equals(value, classKey.value);
-            }
-
-            @Override
-            public int hashCode() {
-                return Objects.hash(type, value);
-            }
-        }
-    }
-
-    /**
-     * A builder for the {@code AbstractCache} class.
-     */
-    class CacheBuilder {
-        /**
-         * A empty string.
-         */
-        private static final String EMPTY_STRING = "";
-
-        /**
-         * The class package.
-         */
-        private final CachePackage cachePackage;
-
-        /**
-         * The class package category.
-         */
-        private final CacheCategory cacheCategory;
-
-        /**
-         * The class name.
-         */
-        private final String className, methodName, fieldName;
-
-        /**
-         * Additional data for package.
-         */
-        private final String additionalData;
-
-        /**
-         * The class.
-         */
-        private final Class<?> clazz;
-
-        /**
-         * The class parameters.
-         */
-        private final Iterable<Class<?>[]> parameterTypes;
-
-        /**
-         * Creates a new {@link CacheBuilder} with the provided package.
-         *
-         * @param cachePackage The cache package.
-         */
-        public CacheBuilder(CachePackage cachePackage) {
-            this(cachePackage,
-                    CacheCategory.DEFAULT,
-                    EMPTY_STRING,
-                    EMPTY_STRING,
-                    EMPTY_STRING,
-                    EMPTY_STRING,
-                    ImmutableList.of());
-        }
-
-        /**
-         * Creates a new {@link CacheBuilder} with the provided values.
-         *
-         * @param cachePackage   The class package.
-         * @param cacheCategory  The class category.
-         * @param className      The class name.
-         * @param methodName     The class method name.
-         * @param fieldName      The class field name.
-         * @param additionalData The package additional data.
-         * @param parameterTypes The class parameters.
-         */
-        protected CacheBuilder(CachePackage cachePackage,
-                               CacheCategory cacheCategory,
-                               String className,
-                               String methodName,
-                               String fieldName,
-                               String additionalData,
-                               Iterable<Class<?>[]> parameterTypes) {
-            this.cachePackage = cachePackage;
-            this.cacheCategory = cacheCategory;
-            this.className = className;
-            this.methodName = methodName;
-            this.fieldName = fieldName;
-            this.additionalData = additionalData;
-            this.parameterTypes = parameterTypes;
-            this.clazz = null;
-        }
-
-        /**
-         * Defines the category of the cache.
-         *
-         * @param cacheCategory The category.
-         * @return The builder with the new category.
-         */
-        public CacheBuilder withCategory(CacheCategory cacheCategory) {
-            return new CacheBuilder(
-                cachePackage,
-                cacheCategory,
-                className,
-                methodName,
-                fieldName,
-                additionalData,
-                parameterTypes
-            );
-        }
-
-        /**
-         * Defines the cache class name.
-         *
-         * @param className The class name.
-         * @return The builder with the new class.
-         */
-        public CacheBuilder withClassName(String className) {
-            return new CacheBuilder(
-                cachePackage,
-                cacheCategory,
-                formatClass(className),
-                methodName,
-                fieldName,
-                additionalData,
-                parameterTypes
-            );
-        }
-
-        /**
-         * Defines the cache class.
-         *
-         * @param clazz The class.
-         * @return The builder with the new class.
-         */
-        public CacheBuilder withClassName(Class<?> clazz) {
-            return new CacheBuilder(
-                cachePackage,
-                cacheCategory,
-                clazz == null ? EMPTY_STRING : clazz.getName(),
-                methodName,
-                fieldName,
-                additionalData,
-                parameterTypes
-            );
-        }
-
-        /**
-         * Defines the cache method.
-         *
-         * @param methodName The method name.
-         * @return The builder with the new method.
-         */
-        public CacheBuilder withMethodName(String methodName) {
-            return new CacheBuilder(
-                cachePackage,
-                cacheCategory,
-                className,
-                methodName,
-                fieldName,
-                additionalData,
-                parameterTypes
-            );
-        }
-
-        /**
-         * Defines the cache field.
-         *
-         * @param fieldName The field name.
-         * @return The builder with the new field.
-         */
-        public CacheBuilder withFieldName(String fieldName) {
-            return new CacheBuilder(
-                cachePackage,
-                cacheCategory,
-                className,
-                methodName,
-                fieldName,
-                additionalData,
-                parameterTypes
-            );
-        }
-
-        /**
-         * Defines the additional data for the package.
-         *
-         * @param additionalData The additional data.
-         * @return The builder with the new package additional data.
-         */
-        public CacheBuilder withAdditionalData(String additionalData) {
-            return new CacheBuilder(
-                cachePackage,
-                cacheCategory,
-                className,
-                methodName,
-                fieldName,
-                additionalData,
-                parameterTypes
-            );
-        }
-
-        /**
-         * Defines the parameter types for the cache class.
-         *
-         * @param types The parameter types.
-         * @return The builder with the new cache class parameter types.
-         */
-        public CacheBuilder withParameterTypes(Class<?>... types) {
-            return new CacheBuilder(
-                cachePackage,
-                cacheCategory,
-                className,
-                methodName,
-                fieldName,
-                additionalData,
-                Iterables.concat(parameterTypes, ImmutableList.of(types))
-            );
-        }
-
-        protected String formatClass(String className) {
-            switch (cachePackage) {
-                case MINECRAFT_SERVER:
-                case CRAFT_BUKKIT:
-                    return String.format((cachePackage == CachePackage.CRAFT_BUKKIT ?
-                            cachePackage.getFixedPackageName() : cachePackage.getForCategory(cacheCategory, additionalData)) + ".%s",
-                            className);
-                case DEFAULT:
-                    return className;
-                default:
-                    throw new IllegalArgumentException("Unexpected package " + cachePackage.name());
-            }
-        }
-    }
-
-    /**
-     * An abstract implementation.
-     *
-     * @param <T> The class type.
-     */
-    abstract class BaseCache<T> {
-        /**
-         * The logger.
-         */
-        private static final Logger LOGGER = Logger.getLogger(BaseCache.class.getName());
-
-        /**
-         * The builder.
-         */
-        protected final CacheBuilder cacheBuilder;
-
-        /**
-         * The builder class.
-         */
-        protected Class<?> BUILDER_CLASS ;
-
-        /**
-         * Creates a new cache loader for the given builder.
-         */
-        protected BaseCache(CacheBuilder cacheBuilder) {
+        protected BaseCache(TypeCache.CacheBuilder cacheBuilder) {
             this.cacheBuilder = cacheBuilder;
+
+            String classes;
             try {
-                BUILDER_CLASS = Class.forName(cacheBuilder.className);
-            } catch (ClassNotFoundException e) {
-                // ignored
+                for(Iterator var2 = cacheBuilder.className.iterator(); var2.hasNext(); this.BUILDER_CLASS = Class.forName(classes)) {
+                    classes = (String)var2.next();
+                }
+            } catch (ClassNotFoundException var4) {
             }
+
         }
 
-        /**
-         * Returns the loaded type.
-         *
-         * @return The loaded type class.
-         */
         public T load() {
             try {
-                if (BUILDER_CLASS == null) {
-                    throw new IllegalStateException("can't find class for: " + cacheBuilder.className);
+                if (this.BUILDER_CLASS == null) {
+                    throw new IllegalStateException();
+                } else {
+                    T eval = this.cached != null ? this.cached : (this.cached = this.onLoad());
+                    if (eval == null) {
+                        throw new NullPointerException();
+                    } else {
+                        return eval;
+                    }
                 }
-                return onLoad();
-            } catch (Throwable throwable) {
-                // Skip class...
-                log(
-                    "Skipping cache for " + cacheBuilder.className
-                );
+            } catch (Throwable var2) {
+                if (var2 instanceof IllegalStateException) {
+                    this.log("No cache found for: " + this.cacheBuilder.className);
+                }
+
+                this.log("No cache found for: " + this.cacheBuilder.className + " : " + this.cacheBuilder.methods.toString());
                 return null;
             }
         }
 
-        /**
-         * Sends debug message to console.
-         *
-         * @param message The message to send.
-         */
         private void log(String message) {
             LOGGER.log(Level.WARNING, message);
         }
 
-        /**
-         * Loads the class type.
-         *
-         * @return The loaded class type.
-         */
         protected abstract T onLoad() throws Exception;
 
-        /**
-         * Initializes and loads the given class.
-         */
-        public static class ClazzLoader extends BaseCache<Class<?>> {
-            /**
-             * Creates a new class loader for the given builder.
-             */
-            public ClazzLoader(CacheBuilder cacheBuilder) {
+        public static class EnumLoader extends TypeCache.BaseCache<Enum<?>[]> {
+            public EnumLoader(TypeCache.CacheBuilder cacheBuilder) {
                 super(cacheBuilder);
             }
 
-            @Override
-            protected Class<?> onLoad() {
-                return BUILDER_CLASS;
-            }
-        }
+            protected Enum<?>[] onLoad() {
+                Enum<?>[] enumConstants = (Enum[])this.BUILDER_CLASS.getEnumConstants();
+                Enum[] var2 = enumConstants;
+                int var3 = enumConstants.length;
 
-        /**
-         * Initializes and loads the given method.
-         */
-        public static class MethodLoader extends BaseCache<Method> {
-            /**
-             * Creates a new method loader for the given builder.
-             */
-            public MethodLoader(CacheBuilder builder) {
-                super(builder);
-            }
-
-            @Override
-            protected Method onLoad() throws NoSuchMethodException {
-                return Iterables.size(cacheBuilder.parameterTypes) > 0 ?
-                    BUILDER_CLASS.getDeclaredMethod(cacheBuilder.methodName, Iterables.get(cacheBuilder.parameterTypes, 0)) :
-                    BUILDER_CLASS.getDeclaredMethod(cacheBuilder.methodName);
-            }
-        }
-
-        /**
-         * Initializes and loads the given field.
-         */
-        public static class FieldLoader extends BaseCache<Field> {
-            /**
-             * Creates a new field loader for the given builder.
-             */
-            public FieldLoader(CacheBuilder cacheBuilder) {
-                super(cacheBuilder);
-            }
-
-            @Override
-            protected Field onLoad() throws NoSuchFieldException {
-                Field field = BUILDER_CLASS.getDeclaredField(cacheBuilder.fieldName);
-                field.setAccessible(true);
-                return field;
-            }
-
-            /** Loads the field value. */
-            public Object loadValue() {
-                return new AsValueField(this).load();
-            }
-
-            /**
-             * Loads the given field value.
-             */
-            private static class AsValueField extends BaseCache<Object> {
-                /** The field loader. */
-                private final FieldLoader fieldLoader;
-
-                /**
-                 * Creates a new field value loader for the field loader.
-                 */
-                public AsValueField(FieldLoader fieldLoader) {
-                    super(fieldLoader.cacheBuilder);
-                    this.fieldLoader = fieldLoader;
+                for(int var4 = 0; var4 < var3; ++var4) {
+                    Enum<?> enumConstant = var2[var4];
+                    TypeCache.ClassCache.register(enumConstant.name(), enumConstant, this.BUILDER_CLASS);
                 }
 
-                @Override
-                protected Object onLoad() throws IllegalAccessException, NoSuchFieldException {
-                    Field field = fieldLoader.onLoad();
-                    return field.get(null);
-                }
+                return enumConstants;
             }
         }
 
-        /**
-         * Initializes and loads the given constructor.
-         */
-        public static class ConstructorLoader extends BaseCache<Constructor<?>> {
-            /**
-             * Creates a new constructor loader for the given builder.
-             */
-            public ConstructorLoader(CacheBuilder cacheBuilder) {
+        public static class ConstructorLoader extends TypeCache.BaseCache<Constructor<?>> {
+            public ConstructorLoader(TypeCache.CacheBuilder cacheBuilder) {
                 super(cacheBuilder);
             }
 
-            @Override
             protected Constructor<?> onLoad() throws NoSuchMethodException {
                 Constructor<?> constructor = null;
-                if (Iterables.size(cacheBuilder.parameterTypes) > 1) { // 1.17
-                    for (Class<?>[] keyParameters : cacheBuilder.parameterTypes) {
+                if (Iterables.size(this.cacheBuilder.parameterTypes) > 1) {
+                    Iterator var2 = this.cacheBuilder.parameterTypes.iterator();
+
+                    while(var2.hasNext()) {
+                        Class[] keyParameters = (Class[])var2.next();
+
                         try {
-                            constructor = BUILDER_CLASS.getDeclaredConstructor(keyParameters);
-                        } catch (NoSuchMethodException e) {
-                            // Next...
+                            constructor = this.BUILDER_CLASS.getDeclaredConstructor(keyParameters);
+                        } catch (NoSuchMethodException var5) {
                         }
                     }
                 } else {
-                    constructor = Iterables.size(cacheBuilder.parameterTypes) > 0 ?
-                        BUILDER_CLASS.getDeclaredConstructor(Iterables.get(cacheBuilder.parameterTypes, 0)) : BUILDER_CLASS.getDeclaredConstructor();
+                    constructor = Iterables.size(this.cacheBuilder.parameterTypes) > 0 ? this.BUILDER_CLASS.getDeclaredConstructor((Class[])Iterables.get(this.cacheBuilder.parameterTypes, 0)) : this.BUILDER_CLASS.getDeclaredConstructor();
                 }
 
-                // Set accessible
                 if (constructor != null) {
                     constructor.setAccessible(true);
                 }
+
                 return constructor;
             }
         }
 
-        /**
-         * Initializes and loads the enum constants for the given class.
-         */
-        public static class EnumLoader extends BaseCache<Enum<?>[]> {
-            /**
-             * Creates a new multiple field loader for the given builder.
-             */
-            public EnumLoader(CacheBuilder cacheBuilder) {
+        public static class FieldLoader extends TypeCache.BaseCache<Field> {
+            public FieldLoader(TypeCache.CacheBuilder cacheBuilder) {
                 super(cacheBuilder);
             }
 
-            @Override
-            protected Enum<?>[] onLoad() {
-                Enum<?>[] enumConstants = (Enum<?>[]) BUILDER_CLASS.getEnumConstants();
-                for (Enum<?> enumConstant : enumConstants) {
-                    ClassCache.register(enumConstant.name(), enumConstant, BUILDER_CLASS);
+            protected Field onLoad() throws NoSuchFieldException {
+                if (this.cacheBuilder.expectType != null) {
+                    Field[] var1 = this.BUILDER_CLASS.getDeclaredFields();
+                    int var2 = var1.length;
+
+                    for(int var3 = 0; var3 < var2; ++var3) {
+                        Field field = var1[var3];
+                        if (field.getType() == this.cacheBuilder.expectType) {
+                            field.setAccessible(true);
+                            return field;
+                        }
+                    }
                 }
-                return enumConstants;
+
+                Field field = this.BUILDER_CLASS.getDeclaredField(this.cacheBuilder.fieldName);
+                field.setAccessible(true);
+                return field;
+            }
+
+            public TypeCache.BaseCache.FieldLoader.AsValueField asValueField() {
+                return new TypeCache.BaseCache.FieldLoader.AsValueField(this);
+            }
+
+            private static class AsValueField extends TypeCache.BaseCache<Object> {
+                private final TypeCache.BaseCache.FieldLoader fieldLoader;
+
+                public AsValueField(TypeCache.BaseCache.FieldLoader fieldLoader) {
+                    super(fieldLoader.cacheBuilder);
+                    this.fieldLoader = fieldLoader;
+                }
+
+                protected Object onLoad() throws IllegalAccessException, NoSuchFieldException {
+                    Field field = this.fieldLoader.onLoad();
+                    return field.get((Object)null);
+                }
+            }
+        }
+
+        public static class MethodLoader extends TypeCache.BaseCache<Method> {
+            public MethodLoader(TypeCache.CacheBuilder builder) {
+                super(builder);
+            }
+
+            protected Method onLoad() {
+                Method methodThis = null;
+                List<String> methods = this.cacheBuilder.methods;
+                boolean hasExpectedType = this.cacheBuilder.expectType != null;
+                if (methods.isEmpty() && hasExpectedType) {
+                    Method[] var4 = this.BUILDER_CLASS.getDeclaredMethods();
+                    int var5 = var4.length;
+
+                    for(int var6 = 0; var6 < var5; ++var6) {
+                        Method method = var4[var6];
+                        if (method.getReturnType() == this.cacheBuilder.expectType) {
+                            return method;
+                        }
+                    }
+                }
+
+                Iterator var9 = this.cacheBuilder.methods.iterator();
+
+                while(var9.hasNext()) {
+                    String methodName = (String)var9.next();
+
+                    try {
+                        Method maybeGet;
+                        if (!Iterables.isEmpty(this.cacheBuilder.parameterTypes)) {
+                            maybeGet = this.BUILDER_CLASS.getDeclaredMethod(methodName, (Class[])Iterables.get(this.cacheBuilder.parameterTypes, 0));
+                        } else {
+                            maybeGet = this.BUILDER_CLASS.getDeclaredMethod(methodName);
+                        }
+
+                        if (this.cacheBuilder.expectType == null || this.cacheBuilder.expectType == maybeGet.getReturnType()) {
+                            maybeGet.setAccessible(true);
+                            methodThis = maybeGet;
+                        }
+                    } catch (NoSuchMethodException var8) {
+                    }
+                }
+
+                return methodThis;
+            }
+        }
+
+        public static class ClazzLoader extends TypeCache.BaseCache<Class<?>> {
+            public ClazzLoader(TypeCache.CacheBuilder cacheBuilder) {
+                super(cacheBuilder);
+            }
+
+            protected Class<?> onLoad() {
+                return this.BUILDER_CLASS;
+            }
+        }
+    }
+
+    public static class CacheBuilder {
+        private static final String EMPTY_STRING = "";
+        private final CachePackage cachePackage;
+        private final CacheCategory cacheCategory;
+        private final String fieldName;
+        private final List<String> className;
+        private final List<String> methods;
+        private final String additionalData;
+        private final Class<?> clazz;
+        private final Iterable<Class<?>[]> parameterTypes;
+        private final Class<?> expectType;
+
+        public CacheBuilder(CachePackage cachePackage) {
+            this(cachePackage, CacheCategory.DEFAULT, new ArrayList(), "", new ArrayList(), "", ImmutableList.of(), (Class)null);
+        }
+
+        protected CacheBuilder(CachePackage cachePackage, CacheCategory cacheCategory, List<String> className, String fieldName, List<String> methods, String additionalData, Iterable<Class<?>[]> parameterTypes, Class<?> expectType) {
+            this.cachePackage = cachePackage;
+            this.cacheCategory = cacheCategory;
+            this.className = className;
+            this.methods = methods;
+            this.fieldName = fieldName;
+            this.additionalData = additionalData;
+            this.parameterTypes = parameterTypes;
+            this.clazz = null;
+            this.expectType = expectType;
+        }
+
+        public TypeCache.CacheBuilder withCategory(CacheCategory cacheCategory) {
+            return new TypeCache.CacheBuilder(this.cachePackage, cacheCategory, this.className, this.fieldName, this.methods, this.additionalData, this.parameterTypes, this.expectType);
+        }
+
+        public TypeCache.CacheBuilder withClassName(String className) {
+            return new TypeCache.CacheBuilder(this.cachePackage, this.cacheCategory, ImmutableList.<String>builder().addAll(this.className).add(this.formatClass(className)).build(), this.fieldName, this.methods, this.additionalData, this.parameterTypes, this.expectType);
+        }
+
+        public TypeCache.CacheBuilder withClassName(Class<?> clazz) {
+            return new TypeCache.CacheBuilder(this.cachePackage, this.cacheCategory, ImmutableList.<String >builder().addAll(this.className).add(clazz == null ? "" : clazz.getName()).build(), this.fieldName, this.methods, this.additionalData, this.parameterTypes, this.expectType);
+        }
+
+        public TypeCache.CacheBuilder withMethodName(String methodName) {
+            return new TypeCache.CacheBuilder(this.cachePackage, this.cacheCategory, this.className, this.fieldName, ImmutableList.<String>builder().addAll(this.methods).add(methodName).build(), this.additionalData, this.parameterTypes, this.expectType);
+        }
+
+        public TypeCache.CacheBuilder withFieldName(String fieldName) {
+            return new TypeCache.CacheBuilder(this.cachePackage, this.cacheCategory, this.className, fieldName, this.methods, this.additionalData, this.parameterTypes, this.expectType);
+        }
+
+        public TypeCache.CacheBuilder withAdditionalData(String additionalData) {
+            return new TypeCache.CacheBuilder(this.cachePackage, this.cacheCategory, this.className, this.fieldName, this.methods, additionalData, this.parameterTypes, this.expectType);
+        }
+
+        public TypeCache.CacheBuilder withParameterTypes(Class<?>... types) {
+            return new TypeCache.CacheBuilder(this.cachePackage, this.cacheCategory, this.className, this.fieldName, this.methods, this.additionalData, Iterables.concat(this.parameterTypes, ImmutableList.of(types)), this.expectType);
+        }
+
+        public TypeCache.CacheBuilder withExpectResult(Class<?> expectType) {
+            return new TypeCache.CacheBuilder(this.cachePackage, this.cacheCategory, this.className, this.fieldName, this.methods, this.additionalData, this.parameterTypes, expectType);
+        }
+
+        protected String formatClass(String className) {
+            switch(this.cachePackage) {
+                case MINECRAFT_SERVER:
+                case CRAFT_BUKKIT:
+                    return String.format((this.cachePackage == CachePackage.CRAFT_BUKKIT ? this.cachePackage.getFixedPackageName() : this.cachePackage.getForCategory(this.cacheCategory, this.additionalData)) + ".%s", className);
+                case DEFAULT:
+                    return className;
+                default:
+                    throw new IllegalArgumentException("Unexpected package " + this.cachePackage.name());
+            }
+        }
+    }
+
+    public static class ClassCache {
+        protected static final ConcurrentMap<TypeCache.ClassCache.CacheKey, Object> CACHE = new ConcurrentHashMap();
+
+        public ClassCache() {
+        }
+
+        public static Object find(String name, Class<?> objectClass) {
+            return CACHE.get(new TypeCache.ClassCache.CacheKey(name, objectClass));
+        }
+
+        public static void register(String name, Object object, Class<?> objectClass) {
+            CACHE.putIfAbsent(new TypeCache.ClassCache.CacheKey(name, objectClass), object);
+        }
+
+        private static class CacheKey {
+            private final Class<?> type;
+            private final String value;
+
+            public CacheKey(String value, Class<?> type) {
+                this.type = type;
+                this.value = value;
+            }
+
+            public boolean equals(Object o) {
+                if (this == o) {
+                    return true;
+                } else if (o != null && this.getClass() == o.getClass()) {
+                    TypeCache.ClassCache.CacheKey classKey = (TypeCache.ClassCache.CacheKey)o;
+                    return Objects.equals(this.type, classKey.type) && Objects.equals(this.value, classKey.value);
+                } else {
+                    return false;
+                }
+            }
+
+            public int hashCode() {
+                return Objects.hash(new Object[]{this.type, this.value});
             }
         }
     }

@@ -1,94 +1,59 @@
 package io.github.znetworkw.znpcservers.npc;
 
-import io.github.znetworkw.znpcservers.cache.CachePackage;
-import io.github.znetworkw.znpcservers.cache.TypeCache;
-
 import com.google.common.collect.Iterables;
-
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-
+import io.github.znetworkw.znpcservers.cache.CachePackage;
+import io.github.znetworkw.znpcservers.cache.TypeCache.CacheBuilder;
+import io.github.znetworkw.znpcservers.cache.TypeCache.BaseCache.EnumLoader;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 
 public class CustomizationLoader {
-    /**
-     * The bukkit entity class.
-     */
     private final Class<? extends Entity> entityClass;
-
-    /**
-     * A map containing the provided entity methods.
-     */
     private final Map<String, Method> methods;
 
-    /**
-     * Creates a new {@link CustomizationLoader} for an entity type.
-     *
-     * @param entityType  The entity type.
-     * @param methodsName The entity method names to load.
-     */
-    public CustomizationLoader(EntityType entityType,
-                               Iterable<String> methodsName) {
+    public CustomizationLoader(EntityType entityType, Iterable<String> methodsName) {
         this(entityType.getEntityClass(), methodsName);
     }
 
-    /**
-     * Creates a new {@link CustomizationLoader} for an entity type.
-     *
-     * @param entityClass The bukkit entity type class.
-     * @param methodsName The methods to load.
-     */
-    protected CustomizationLoader(Class<? extends Entity> entityClass,
-                                  Iterable<String> methodsName) {
+    protected CustomizationLoader(Class<? extends Entity> entityClass, Iterable<String> methodsName) {
         this.entityClass = entityClass;
-        this.methods = loadMethods(methodsName);
+        this.methods = this.loadMethods(methodsName);
     }
 
-    /**
-     * Returns a map of all the loaded methods that were provided.
-     *
-     * @param iterable The method names.
-     * @return A map of all the loaded methods that were provided.
-     */
     protected Map<String, Method> loadMethods(Iterable<String> iterable) {
-        Map<String, Method> builder = new HashMap<>();
-        for (Method method : entityClass.getMethods()) {
-            if (builder.containsKey(method.getName())
-                || !Iterables.contains(iterable, method.getName())) {
-                // only load provided methods..
-                continue;
-            }
-            for (Class<?> parameter : method.getParameterTypes()) {
-                TypeProperty typeProperty = TypeProperty.forType(parameter);
-                if (typeProperty == null && parameter.isEnum()) {
-                    // create a new cache for the values on the enum class for later use
-                    new TypeCache.BaseCache.EnumLoader(new TypeCache.CacheBuilder(CachePackage.DEFAULT)
-                            .withClassName(parameter.getTypeName())).load();
+        Map<String, Method> builder = new HashMap();
+        Method[] var3 = this.entityClass.getMethods();
+        int var4 = var3.length;
+
+        for(int var5 = 0; var5 < var4; ++var5) {
+            Method method = var3[var5];
+            if (!builder.containsKey(method.getName()) && Iterables.contains(iterable, method.getName())) {
+                Class[] var7 = method.getParameterTypes();
+                int var8 = var7.length;
+
+                for(int var9 = 0; var9 < var8; ++var9) {
+                    Class<?> parameter = var7[var9];
+                    TypeProperty typeProperty = TypeProperty.forType(parameter);
+                    if (typeProperty == null && parameter.isEnum()) {
+                        (new EnumLoader((new CacheBuilder(CachePackage.DEFAULT)).withClassName(parameter.getTypeName()))).load();
+                    }
                 }
+
+                builder.put(method.getName(), method);
             }
-            builder.put(method.getName(), method);
         }
+
         return builder;
     }
 
-    /**
-     * Returns {@code true} if a method with the given name exists.
-     *
-     * @param name The method name.
-     * @return If a method with the given name exists.
-     */
     public boolean contains(String name) {
-        return methods.containsKey(name);
+        return this.methods.containsKey(name);
     }
 
-    /**
-     * Returns a map containing the found entity methods.
-     *
-     * @return A map containing the found entity methods.
-     */
     public Map<String, Method> getMethods() {
-        return methods;
+        return this.methods;
     }
 }

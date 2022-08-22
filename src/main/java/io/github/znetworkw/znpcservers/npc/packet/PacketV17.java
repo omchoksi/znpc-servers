@@ -4,26 +4,26 @@ import com.mojang.authlib.GameProfile;
 import io.github.znetworkw.znpcservers.cache.CacheRegistry;
 import io.github.znetworkw.znpcservers.npc.NPC;
 import io.github.znetworkw.znpcservers.utility.Utils;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import org.bukkit.Bukkit;
 
 public class PacketV17 extends PacketV16 {
+    public PacketV17() {
+    }
 
-    @Override
     public int version() {
         return 17;
     }
 
-    @Override
     public Object getPlayerPacket(Object nmsWorld, GameProfile gameProfile) throws ReflectiveOperationException {
-        return CacheRegistry.PLAYER_CONSTRUCTOR_NEW.newInstance(CacheRegistry.GET_SERVER_METHOD.invoke(Bukkit.getServer()), nmsWorld, gameProfile);
+        return ((Constructor)CacheRegistry.PLAYER_CONSTRUCTOR_NEW.load()).newInstance(((Method)CacheRegistry.GET_SERVER_METHOD.load()).invoke(Bukkit.getServer()), nmsWorld, gameProfile);
     }
 
-    @Override
     public void updateGlowPacket(NPC npc, Object packet) throws ReflectiveOperationException {
-        Utils.setValue(packet, "n", CacheRegistry.ENUM_CHAT_FORMAT_FIND.invoke(null, npc.getNpcPojo().getGlowName()));
+        Utils.setValue(packet, "n", ((Method)CacheRegistry.ENUM_CHAT_FORMAT_FIND.load()).invoke((Object)null, npc.getNpcPojo().getGlowName()));
     }
 
-    @Override
     public Object getClickType(Object interactPacket) {
         return "INTERACT";
     }

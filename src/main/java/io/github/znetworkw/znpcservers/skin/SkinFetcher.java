@@ -2,10 +2,8 @@ package io.github.znetworkw.znpcservers.skin;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -14,86 +12,81 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Retrieves the skin textures for a {@link SkinFetcherBuilder}.
- *
- * @see SkinFetcherBuilder
- */
 public class SkinFetcher {
-    /**
-     * A empty string.
-     */
     private static final String EMPTY_STRING = "";
-    /**
-     * The charset that will be used when making the skin request.
-     */
     private static final String DEFAULT_CHARSET = "UTF-8";
-    /**
-     * A executor service to delegate the work.
-     */
     private static final ExecutorService SKIN_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
-    /**
-     * Creates a new parser.
-     */
     private static final JsonParser JSON_PARSER = new JsonParser();
-    /**
-     * The skin builder.
-     */
     private final SkinFetcherBuilder builder;
 
-    /**
-     * Creates a new {@link SkinFetcher} for the given builder.
-     *
-     * @param builder The builder.
-     */
     public SkinFetcher(SkinFetcherBuilder builder) {
         this.builder = builder;
     }
 
-    /**
-     * Fetches the the skin from the specified
-     * builder {@link SkinFetcherBuilder#getAPIServer()}.
-     * @return
-     */
     public CompletableFuture<JsonObject> doReadSkin(SkinFetcherResult skinFetcherResult) {
-        CompletableFuture<JsonObject> completableFuture = new CompletableFuture<>();
+        CompletableFuture<JsonObject> completableFuture = new CompletableFuture();
         SKIN_EXECUTOR_SERVICE.submit(() -> {
             try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(builder.getAPIServer().getURL() + getData()).openConnection();
-                connection.setRequestMethod(builder.getAPIServer().getMethod());
-                connection.setDoInput(true);
-                if (builder.isUrlType()) {
+                HttpURLConnection connection = (HttpURLConnection)(new URL(this.builder.getAPIServer().getURL() + this.getData())).openConnection();
+                connection.setRequestMethod(this.builder.getAPIServer().getMethod());
+                if (this.builder.isUrlType()) {
                     connection.setDoOutput(true);
-                    // send skin data
-                    try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
-                        outputStream.writeBytes("url=" + URLEncoder.encode(builder.getData(), DEFAULT_CHARSET));
+                    DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+
+                    try {
+                        outputStream.writeBytes("url=" + URLEncoder.encode(this.builder.getData(), "UTF-8"));
+                    } catch (Throwable var17) {
+                        try {
+                            outputStream.close();
+                        } catch (Throwable var14) {
+                            var17.addSuppressed(var14);
+                        }
+
+                        throw var17;
                     }
+
+                    outputStream.close();
                 }
-                try (Reader reader = new InputStreamReader(connection.getInputStream(), Charset.forName(DEFAULT_CHARSET))) {
-                    completableFuture.complete(JSON_PARSER.parse(reader).getAsJsonObject());
+
+                try {
+                    InputStreamReader reader = new InputStreamReader(connection.getInputStream(), Charset.forName("UTF-8"));
+
+                    try {
+                        completableFuture.complete(JSON_PARSER.parse(reader).getAsJsonObject());
+                    } catch (Throwable var15) {
+                        try {
+                            reader.close();
+                        } catch (Throwable var13) {
+                            var15.addSuppressed(var13);
+                        }
+
+                        throw var15;
+                    }
+
+                    reader.close();
                 } finally {
                     connection.disconnect();
                 }
-            } catch (Throwable throwable) {
-                completableFuture.completeExceptionally(throwable);
+            } catch (Throwable var18) {
+                var18.printStackTrace();
+                completableFuture.completeExceptionally(var18);
             }
+
         });
         completableFuture.whenComplete((response, throwable) -> {
             if (completableFuture.isCompletedExceptionally()) {
-                skinFetcherResult.onDone(null, throwable);
+                skinFetcherResult.onDone((String[])null, throwable);
             } else {
-                JsonObject jsonObject = response.getAsJsonObject(builder.getAPIServer().getValueKey());
-                JsonObject properties = jsonObject.getAsJsonObject(builder.getAPIServer().getSignatureKey());
-                skinFetcherResult.onDone(new String[]{properties.get("value").getAsString(), properties.get("signature").getAsString()}, null);
+                JsonObject jsonObject = response.getAsJsonObject(this.builder.getAPIServer().getValueKey());
+                JsonObject properties = jsonObject.getAsJsonObject(this.builder.getAPIServer().getSignatureKey());
+                skinFetcherResult.onDone(new String[]{properties.get("value").getAsString(), properties.get("signature").getAsString()}, (Throwable)null);
             }
+
         });
         return completableFuture;
     }
 
-    /**
-     * Returns the url data for the builder api server.
-     */
     private String getData() {
-        return builder.isProfileType() ? "/" + builder.getData() : EMPTY_STRING;
+        return this.builder.isProfileType() ? "/" + this.builder.getData() : "";
     }
 }

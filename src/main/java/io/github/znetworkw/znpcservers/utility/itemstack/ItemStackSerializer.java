@@ -1,4 +1,4 @@
-package io.github.znetworkw.znpcservers.utils.itemstack;
+package io.github.znetworkw.znpcservers.utility.itemstack;
 
 import com.google.gson.*;
 import org.bukkit.Material;

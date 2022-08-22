@@ -4,7 +4,7 @@ import com.google.common.base.MoreObjects;
 import io.github.znetworkw.znpcservers.ServersNPC;
 import io.github.znetworkw.znpcservers.npc.event.ClickType;
 import io.github.znetworkw.znpcservers.user.ZUser;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 

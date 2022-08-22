@@ -1,4 +1,4 @@
-package io.github.znetworkw.znpcservers.utils.inventory;
+package io.github.znetworkw.znpcservers.utility.inventory;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 

@@ -3,7 +3,7 @@ package io.github.znetworkw.znpcservers.npc;
 import io.github.znetworkw.znpcservers.UnexpectedCallException;
 import io.github.znetworkw.znpcservers.cache.CacheRegistry;
 import io.github.znetworkw.znpcservers.cache.TypeCache.ClassCache;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 import org.bukkit.entity.EntityType;
 
 import java.lang.reflect.Constructor;

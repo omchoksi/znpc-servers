@@ -1,4 +1,4 @@
-package io.github.znetworkw.znpcservers.utils;
+package io.github.znetworkw.znpcservers.utility;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;

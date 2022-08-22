@@ -1,6 +1,6 @@
 package io.github.znetworkw.znpcservers.cache;
 
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 
 public enum CachePackage {
     DEFAULT,

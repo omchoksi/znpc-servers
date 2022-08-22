@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import io.github.znetworkw.znpcservers.npc.NPCFunction.WithoutFunction;
 import io.github.znetworkw.znpcservers.npc.NPCFunction.WithoutFunctionSelfUpdate;
 import io.github.znetworkw.znpcservers.npc.function.GlowFunction;
-import io.github.znetworkw.znpcservers.utils.GuavaCollectors;
+import io.github.znetworkw.znpcservers.utility.GuavaCollectors;
 
 public final class FunctionFactory {
     public static ImmutableList<NPCFunction> WITHOUT_FUNCTION = ImmutableList.of(new WithoutFunction("look"), new WithoutFunctionSelfUpdate("holo"), new WithoutFunctionSelfUpdate("mirror"));

@@ -1,4 +1,4 @@
-package io.github.znetworkw.znpcservers.utils;
+package io.github.znetworkw.znpcservers.utility;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;

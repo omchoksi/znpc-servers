@@ -7,7 +7,7 @@ import io.github.znetworkw.znpcservers.cache.TypeCache.BaseCache.ConstructorLoad
 import io.github.znetworkw.znpcservers.cache.TypeCache.BaseCache.FieldLoader;
 import io.github.znetworkw.znpcservers.cache.TypeCache.BaseCache.MethodLoader;
 import io.github.znetworkw.znpcservers.cache.TypeCache.CacheBuilder;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 import io.netty.channel.Channel;
 import org.bukkit.inventory.ItemStack;
 

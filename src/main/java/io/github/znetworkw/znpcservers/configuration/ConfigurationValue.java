@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import io.github.znetworkw.znpcservers.npc.NPCModel;
 import io.github.znetworkw.znpcservers.npc.NamingType;
 import io.github.znetworkw.znpcservers.npc.conversation.Conversation;
-import io.github.znetworkw.znpcservers.utils.GuavaCollectors;
+import io.github.znetworkw.znpcservers.utility.GuavaCollectors;
 
 import java.util.ArrayList;
 import java.util.Arrays;

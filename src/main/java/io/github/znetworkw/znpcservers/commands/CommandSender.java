@@ -3,7 +3,7 @@ package io.github.znetworkw.znpcservers.commands;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;

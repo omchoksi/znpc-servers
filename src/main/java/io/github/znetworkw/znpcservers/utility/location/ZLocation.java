@@ -1,4 +1,4 @@
-package io.github.znetworkw.znpcservers.utils.location;
+package io.github.znetworkw.znpcservers.utility.location;
 
 import com.google.gson.*;
 import org.bukkit.Bukkit;

@@ -13,8 +13,8 @@ import io.github.znetworkw.znpcservers.npc.conversation.ConversationModel;
 import io.github.znetworkw.znpcservers.npc.hologram.Hologram;
 import io.github.znetworkw.znpcservers.npc.packet.PacketCache;
 import io.github.znetworkw.znpcservers.user.ZUser;
-import io.github.znetworkw.znpcservers.utils.Utils;
-import io.github.znetworkw.znpcservers.utils.location.ZLocation;
+import io.github.znetworkw.znpcservers.utility.Utils;
+import io.github.znetworkw.znpcservers.utility.location.ZLocation;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 

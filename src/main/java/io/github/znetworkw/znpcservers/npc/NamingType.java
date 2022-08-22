@@ -1,6 +1,6 @@
 package io.github.znetworkw.znpcservers.npc;
 
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 
 public enum NamingType {
     DEFAULT {

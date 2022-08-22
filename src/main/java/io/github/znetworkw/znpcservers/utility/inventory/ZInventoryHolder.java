@@ -1,4 +1,4 @@
-package io.github.znetworkw.znpcservers.utils.inventory;
+package io.github.znetworkw.znpcservers.utility.inventory;
 
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;

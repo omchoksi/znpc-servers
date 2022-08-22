@@ -4,7 +4,7 @@ import io.github.znetworkw.znpcservers.ServersNPC;
 import io.github.znetworkw.znpcservers.configuration.Configuration;
 import io.github.znetworkw.znpcservers.configuration.ConfigurationValue;
 import io.github.znetworkw.znpcservers.user.ZUser;
-import io.github.znetworkw.znpcservers.utils.location.ZLocation;
+import io.github.znetworkw.znpcservers.utility.location.ZLocation;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;

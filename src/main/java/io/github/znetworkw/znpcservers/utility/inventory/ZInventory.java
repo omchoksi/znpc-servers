@@ -1,6 +1,6 @@
-package io.github.znetworkw.znpcservers.utils.inventory;
+package io.github.znetworkw.znpcservers.utility.inventory;
 
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

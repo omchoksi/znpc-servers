@@ -1,4 +1,4 @@
-package io.github.znetworkw.znpcservers.utils;
+package io.github.znetworkw.znpcservers.utility;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

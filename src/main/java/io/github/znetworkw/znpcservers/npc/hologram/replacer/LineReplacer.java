@@ -3,7 +3,7 @@ package io.github.znetworkw.znpcservers.npc.hologram.replacer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.UnmodifiableIterator;
 import io.github.znetworkw.znpcservers.user.ZUser;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 
 public interface LineReplacer {
     ImmutableList<LineReplacer> LINE_REPLACERS = ImmutableList.of(new RGBLine());

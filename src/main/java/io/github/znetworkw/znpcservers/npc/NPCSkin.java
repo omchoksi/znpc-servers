@@ -2,7 +2,7 @@ package io.github.znetworkw.znpcservers.npc;
 
 import io.github.znetworkw.znpcservers.skin.SkinFetcherBuilder;
 import io.github.znetworkw.znpcservers.skin.SkinFetcherResult;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 
 public class NPCSkin {
     private static final String EMPTY_STRING = "";

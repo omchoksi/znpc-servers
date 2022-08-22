@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.internal.$Gson$Types;
 import io.github.znetworkw.znpcservers.ServersNPC;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 import org.bukkit.command.CommandSender;
 
 import java.io.BufferedReader;

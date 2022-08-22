@@ -1,6 +1,6 @@
-package io.github.znetworkw.znpcservers.utils.inventory;
+package io.github.znetworkw.znpcservers.utility.inventory;
 
-import io.github.znetworkw.znpcservers.utils.itemstack.ItemStackBuilder;
+import io.github.znetworkw.znpcservers.utility.itemstack.ItemStackBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

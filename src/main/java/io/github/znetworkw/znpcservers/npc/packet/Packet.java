@@ -8,8 +8,8 @@ import io.github.znetworkw.znpcservers.npc.FunctionFactory;
 import io.github.znetworkw.znpcservers.npc.ItemSlot;
 import io.github.znetworkw.znpcservers.npc.NPC;
 import io.github.znetworkw.znpcservers.npc.NPCType;
-import io.github.znetworkw.znpcservers.utils.ReflectionUtils;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.ReflectionUtils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Constructor;

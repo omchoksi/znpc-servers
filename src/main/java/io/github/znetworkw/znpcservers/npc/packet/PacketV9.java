@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableList.Builder;
 import io.github.znetworkw.znpcservers.cache.CacheRegistry;
 import io.github.znetworkw.znpcservers.npc.ItemSlot;
 import io.github.znetworkw.znpcservers.npc.NPC;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Constructor;

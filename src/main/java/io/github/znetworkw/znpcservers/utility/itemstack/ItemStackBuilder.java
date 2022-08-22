@@ -1,6 +1,6 @@
-package io.github.znetworkw.znpcservers.utils.itemstack;
+package io.github.znetworkw.znpcservers.utility.itemstack;
 
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;

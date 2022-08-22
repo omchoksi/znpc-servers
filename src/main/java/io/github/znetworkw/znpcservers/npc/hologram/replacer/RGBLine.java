@@ -1,7 +1,7 @@
 package io.github.znetworkw.znpcservers.npc.hologram.replacer;
 
 import io.github.znetworkw.znpcservers.configuration.ConfigurationConstants;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 import net.md_5.bungee.api.ChatColor;
 
 import java.util.concurrent.ThreadLocalRandom;

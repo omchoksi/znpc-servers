@@ -3,7 +3,7 @@ package io.github.znetworkw.znpcservers.npc.packet;
 import com.mojang.authlib.GameProfile;
 import io.github.znetworkw.znpcservers.cache.CacheRegistry;
 import io.github.znetworkw.znpcservers.npc.NPC;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.Constructor;

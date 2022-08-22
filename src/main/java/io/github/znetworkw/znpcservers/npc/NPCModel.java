@@ -1,7 +1,7 @@
 package io.github.znetworkw.znpcservers.npc;
 
 import io.github.znetworkw.znpcservers.npc.conversation.ConversationModel;
-import io.github.znetworkw.znpcservers.utils.location.ZLocation;
+import io.github.znetworkw.znpcservers.utility.location.ZLocation;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;

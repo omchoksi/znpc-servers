@@ -1,7 +1,7 @@
 package io.github.znetworkw.znpcservers.npc.packet;
 
 import com.google.common.collect.ImmutableSet;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 
 import java.util.Comparator;
 

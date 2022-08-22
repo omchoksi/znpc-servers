@@ -8,7 +8,7 @@ import io.github.znetworkw.znpcservers.configuration.ConfigurationValue;
 import io.github.znetworkw.znpcservers.npc.NPC;
 import io.github.znetworkw.znpcservers.npc.hologram.replacer.LineReplacer;
 import io.github.znetworkw.znpcservers.user.ZUser;
-import io.github.znetworkw.znpcservers.utils.Utils;
+import io.github.znetworkw.znpcservers.utility.Utils;
 import org.bukkit.Location;
 
 import javax.annotation.Nullable;

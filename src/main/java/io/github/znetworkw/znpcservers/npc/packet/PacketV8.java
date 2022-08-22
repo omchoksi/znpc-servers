@@ -1,83 +1,69 @@
 package io.github.znetworkw.znpcservers.npc.packet;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.authlib.GameProfile;
-import io.github.znetworkw.znpcservers.npc.ItemSlot;
 import io.github.znetworkw.znpcservers.cache.CacheRegistry;
+import io.github.znetworkw.znpcservers.npc.ItemSlot;
 import io.github.znetworkw.znpcservers.npc.NPC;
-import io.github.znetworkw.znpcservers.utility.Utils;
+import io.github.znetworkw.znpcservers.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Constructor;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 public class PacketV8 implements Packet {
+    public PacketV8() {
+    }
 
-    @Override
     public int version() {
         return 8;
     }
 
-    @Override
     public Object getPlayerPacket(Object nmsWorld, GameProfile gameProfile) throws ReflectiveOperationException {
-        Constructor<?> constructor = Utils.BUKKIT_VERSION > 13 ? CacheRegistry.PLAYER_INTERACT_MANAGER_NEW_CONSTRUCTOR : CacheRegistry.PLAYER_INTERACT_MANAGER_OLD_CONSTRUCTOR;
-        return CacheRegistry.PLAYER_CONSTRUCTOR_OLD.newInstance(
-            CacheRegistry.GET_SERVER_METHOD.invoke(Bukkit.getServer()),
-            nmsWorld,
-            gameProfile,
-            constructor.newInstance(nmsWorld));
+        Constructor<?> constructor = Utils.BUKKIT_VERSION > 13 ? (Constructor)CacheRegistry.PLAYER_INTERACT_MANAGER_NEW_CONSTRUCTOR.load() : (Constructor)CacheRegistry.PLAYER_INTERACT_MANAGER_OLD_CONSTRUCTOR.load();
+        return ((Constructor)CacheRegistry.PLAYER_CONSTRUCTOR_OLD.load()).newInstance(((Method)CacheRegistry.GET_SERVER_METHOD.load()).invoke(Bukkit.getServer()), nmsWorld, gameProfile, constructor.newInstance(nmsWorld));
     }
 
-    @Override
     public Object getSpawnPacket(Object nmsEntity, boolean isPlayer) throws ReflectiveOperationException {
-        return isPlayer ?
-            CacheRegistry.PACKET_PLAY_OUT_NAMED_ENTITY_CONSTRUCTOR.newInstance(nmsEntity)
-            : CacheRegistry.PACKET_PLAY_OUT_SPAWN_ENTITY_CONSTRUCTOR.newInstance(nmsEntity);
+        return isPlayer ? ((Constructor)CacheRegistry.PACKET_PLAY_OUT_NAMED_ENTITY_CONSTRUCTOR.load()).newInstance(nmsEntity) : ((Constructor)CacheRegistry.PACKET_PLAY_OUT_SPAWN_ENTITY_CONSTRUCTOR.load()).newInstance(nmsEntity);
     }
 
-    @Override
     public Object convertItemStack(int entityId, ItemSlot itemSlot, ItemStack itemStack) throws ReflectiveOperationException {
-        return CacheRegistry.PACKET_PLAY_OUT_ENTITY_EQUIPMENT_CONSTRUCTOR_OLD.newInstance(
-            entityId,
-            itemSlot.getSlotOld(),
-            CacheRegistry.AS_NMS_COPY_METHOD.invoke(CacheRegistry.CRAFT_ITEM_STACK_CLASS, itemStack));
+        return ((Constructor)CacheRegistry.PACKET_PLAY_OUT_ENTITY_EQUIPMENT_CONSTRUCTOR_OLD.load()).newInstance(entityId, itemSlot.getSlotOld(), ((Method)CacheRegistry.AS_NMS_COPY_METHOD.load()).invoke(CacheRegistry.CRAFT_ITEM_STACK_CLASS, itemStack));
     }
 
-    @Override
     public Object getClickType(Object interactPacket) throws ReflectiveOperationException {
         return Utils.getValue(interactPacket, "action");
     }
 
-    @Override
     public Object getMetadataPacket(int entityId, Object nmsEntity) throws ReflectiveOperationException {
-        return CacheRegistry.PACKET_PLAY_OUT_ENTITY_META_DATA_CONSTRUCTOR.newInstance(entityId,
-            CacheRegistry.GET_DATA_WATCHER_METHOD.invoke(nmsEntity), true);
+        return ((Constructor)CacheRegistry.PACKET_PLAY_OUT_ENTITY_META_DATA_CONSTRUCTOR.load()).newInstance(entityId, ((Method)CacheRegistry.GET_DATA_WATCHER_METHOD.load()).invoke(nmsEntity), true);
     }
 
-    @Override
     public Object getHologramSpawnPacket(Object armorStand) throws ReflectiveOperationException {
-        return CacheRegistry.PACKET_PLAY_OUT_SPAWN_ENTITY_CONSTRUCTOR.newInstance(armorStand);
+        return ((Constructor)CacheRegistry.PACKET_PLAY_OUT_SPAWN_ENTITY_CONSTRUCTOR.load()).newInstance(armorStand);
     }
 
-    @Override
     public ImmutableList<Object> getEquipPackets(NPC npc) throws ReflectiveOperationException {
-        ImmutableList.Builder<Object> builder = ImmutableList.builder();
-        for (Map.Entry<ItemSlot, ItemStack> stackEntry : npc.getNpcPojo().getNpcEquip().entrySet()) {
-            builder.add(CacheRegistry.PACKET_PLAY_OUT_ENTITY_EQUIPMENT_CONSTRUCTOR_OLD.newInstance(
-                npc.getEntityID(),
-                stackEntry.getKey().getSlotOld(),
-                convertItemStack(npc.getEntityID(), stackEntry.getKey(), stackEntry.getValue())));
+        Builder<Object> builder = ImmutableList.builder();
+        Iterator var3 = npc.getNpcPojo().getNpcEquip().entrySet().iterator();
+
+        while(var3.hasNext()) {
+            Entry<ItemSlot, ItemStack> stackEntry = (Entry)var3.next();
+            builder.add(((Constructor)CacheRegistry.PACKET_PLAY_OUT_ENTITY_EQUIPMENT_CONSTRUCTOR_OLD.load()).newInstance(npc.getEntityID(), ((ItemSlot)stackEntry.getKey()).getSlotOld(), this.convertItemStack(npc.getEntityID(), (ItemSlot)stackEntry.getKey(), (ItemStack)stackEntry.getValue())));
         }
+
         return builder.build();
     }
 
-    @Override
     public void updateGlowPacket(NPC npc, Object packet) throws ReflectiveOperationException {
         throw new IllegalStateException("Glow color is not supported for 1.8 version.");
     }
 
-    @Override
     public boolean allowGlowColor() {
         return false;
     }

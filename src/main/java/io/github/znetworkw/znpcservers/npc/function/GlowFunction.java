@@ -2,47 +2,43 @@ package io.github.znetworkw.znpcservers.npc.function;
 
 import io.github.znetworkw.znpcservers.cache.CacheRegistry;
 import io.github.znetworkw.znpcservers.npc.FunctionContext;
+import io.github.znetworkw.znpcservers.npc.FunctionContext.ContextWithValue;
+import io.github.znetworkw.znpcservers.npc.FunctionFactory;
 import io.github.znetworkw.znpcservers.npc.NPC;
 import io.github.znetworkw.znpcservers.npc.NPCFunction;
-import io.github.znetworkw.znpcservers.npc.FunctionFactory;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 public class GlowFunction extends NPCFunction {
     public GlowFunction() {
         super("glow");
     }
 
-    @Override
     protected ResultType runFunction(NPC npc, FunctionContext functionContext) {
-        if (!(functionContext instanceof FunctionContext.ContextWithValue)) {
+        if (!(functionContext instanceof ContextWithValue)) {
             throw new IllegalStateException("invalid context type, " + functionContext.getClass().getSimpleName() + ", expected ContextWithValue.");
-        }
-        final String glowColorName = ((FunctionContext.ContextWithValue) functionContext).getValue();
-        try {
-            // find the glow color enum
-            final Object glowColor = CacheRegistry.ENUM_CHAT_FORMAT_FIND.invoke(null,
-                glowColorName == null || glowColorName.length() == 0 ? "WHITE" : glowColorName);
-            npc.setGlowColor(glowColor);
-            CacheRegistry.SET_DATA_WATCHER_METHOD.invoke(CacheRegistry.GET_DATA_WATCHER_METHOD.invoke(npc.getNmsEntity()),
-                CacheRegistry.DATA_WATCHER_OBJECT_CONSTRUCTOR.newInstance(
-                    0,
-                    CacheRegistry.DATA_WATCHER_REGISTER_FIELD),
-                !FunctionFactory.isTrue(npc, this) ? (byte) 0x40 : (byte) 0x0);
-            // update glow scoreboard packets
-            npc.getPackets().getProxyInstance().update(npc.getPackets());
-            npc.deleteViewers();
-            return ResultType.SUCCESS;
-        } catch (ReflectiveOperationException operationException) {
-            return ResultType.FAIL;
+        } else {
+            String glowColorName = ((ContextWithValue)functionContext).getValue();
+
+            try {
+                Object glowColor = ((Method)CacheRegistry.ENUM_CHAT_FORMAT_FIND.load()).invoke((Object)null, glowColorName != null && glowColorName.length() != 0 ? glowColorName : "WHITE");
+                npc.setGlowColor(glowColor);
+                ((Method)CacheRegistry.SET_DATA_WATCHER_METHOD.load()).invoke(((Method)CacheRegistry.GET_DATA_WATCHER_METHOD.load()).invoke(npc.getNmsEntity()), ((Constructor)CacheRegistry.DATA_WATCHER_OBJECT_CONSTRUCTOR.load()).newInstance(0, CacheRegistry.DATA_WATCHER_REGISTER_FIELD.load()), Byte.valueOf((byte)(!FunctionFactory.isTrue(npc, this) ? 64 : 0)));
+                npc.getPackets().getProxyInstance().update(npc.getPackets());
+                npc.deleteViewers();
+                return ResultType.SUCCESS;
+            } catch (ReflectiveOperationException var5) {
+                return ResultType.FAIL;
+            }
         }
     }
 
-    @Override
     protected boolean allow(NPC npc) {
         return npc.getPackets().getProxyInstance().allowGlowColor();
     }
 
-    @Override
     public ResultType resolve(NPC npc) {
-        return runFunction(npc, new FunctionContext.ContextWithValue(npc, npc.getNpcPojo().getGlowName()));
+        return this.runFunction(npc, new ContextWithValue(npc, npc.getNpcPojo().getGlowName()));
     }
 }

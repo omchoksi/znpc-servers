@@ -2,9 +2,6 @@ package io.github.znetworkw.znpcservers.npc;
 
 import java.util.function.Function;
 
-/**
- * Used for parsing a primitive type for an {@link java.lang.String}.
- */
 public enum TypeProperty {
     STRING(String::toString),
     BOOLEAN(Boolean::parseBoolean),
@@ -14,49 +11,31 @@ public enum TypeProperty {
     SHORT(Short::parseShort),
     LONG(Long::parseLong);
 
-    /**
-     * A function that parses a string to {@code this} parser.
-     */
     private final Function<String, ?> function;
 
-    /**
-     * Creates a new parser for a primitive type.
-     *
-     * @param function The primitive type parse function.
-     */
-    TypeProperty(Function<String, ?> function) {
+    private TypeProperty(Function<String, ?> function) {
         this.function = function;
     }
 
-    /**
-     * Returns the type parse function.
-     */
     public Function<String, ?> getFunction() {
-        return function;
+        return this.function;
     }
 
-    /**
-     * Locates a parser by a primitive type.
-     *
-     * @param primitiveType The primitive type
-     * @return The corresponding enum or {@code null} if not found.
-     */
     public static TypeProperty forType(Class<?> primitiveType) {
-        if (primitiveType == String.class)
+        if (primitiveType == String.class) {
             return STRING;
-        else if (primitiveType == boolean.class)
+        } else if (primitiveType == Boolean.TYPE) {
             return BOOLEAN;
-        else if (primitiveType == int.class)
+        } else if (primitiveType == Integer.TYPE) {
             return INT;
-        else if (primitiveType == double.class)
+        } else if (primitiveType == Double.TYPE) {
             return DOUBLE;
-        else if (primitiveType == float.class)
+        } else if (primitiveType == Float.TYPE) {
             return FLOAT;
-        else if (primitiveType == short.class)
+        } else if (primitiveType == Short.TYPE) {
             return SHORT;
-        else if (primitiveType == long.class)
-            return LONG;
-        else
-            return null;
+        } else {
+            return primitiveType == Long.TYPE ? LONG : null;
+        }
     }
 }

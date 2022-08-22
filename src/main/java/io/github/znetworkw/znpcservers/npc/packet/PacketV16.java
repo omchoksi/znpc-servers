@@ -8,26 +8,28 @@ import io.github.znetworkw.znpcservers.npc.ItemSlot;
 import io.github.znetworkw.znpcservers.npc.NPC;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Constructor;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 
 public class PacketV16 extends PacketV9 {
+    public PacketV16() {
+    }
 
-    @Override
     public int version() {
         return 16;
     }
 
-    @Override
     public ImmutableList<Object> getEquipPackets(NPC npc) throws ReflectiveOperationException {
         List<Pair<?, ?>> pairs = Lists.newArrayListWithCapacity(ItemSlot.values().length);
-        for (Map.Entry<ItemSlot, ItemStack> entry : npc.getNpcPojo().getNpcEquip().entrySet()) {
-            pairs.add(new Pair<>(getItemSlot(
-                entry.getKey().getSlot()),
-                convertItemStack(npc.getEntityID(), entry.getKey(), entry.getValue())));
+        Iterator var3 = npc.getNpcPojo().getNpcEquip().entrySet().iterator();
+
+        while(var3.hasNext()) {
+            Entry<ItemSlot, ItemStack> entry = (Entry)var3.next();
+            pairs.add(new Pair(this.getItemSlot(((ItemSlot)entry.getKey()).getSlot()), this.convertItemStack(npc.getEntityID(), (ItemSlot)entry.getKey(), (ItemStack)entry.getValue())));
         }
-        return ImmutableList.of(CacheRegistry.PACKET_PLAY_OUT_ENTITY_EQUIPMENT_CONSTRUCTOR_V1.newInstance(
-            npc.getEntityID(),
-            pairs));
+
+        return ImmutableList.of(((Constructor)CacheRegistry.PACKET_PLAY_OUT_ENTITY_EQUIPMENT_CONSTRUCTOR_V1.load()).newInstance(npc.getEntityID(), pairs));
     }
 }

@@ -1,49 +1,27 @@
 package io.github.znetworkw.znpcservers.npc.hologram.replacer;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.UnmodifiableIterator;
 import io.github.znetworkw.znpcservers.user.ZUser;
-import io.github.znetworkw.znpcservers.utility.Utils;
+import io.github.znetworkw.znpcservers.utils.Utils;
 
-/**
- * Interface used for replacing a {@link java.lang.String}.
- */
 public interface LineReplacer {
-    /** List of allowed custom line replacers. */
-    ImmutableList<LineReplacer> LINE_REPLACERS =
-        ImmutableList.of(new RGBLine());
+    ImmutableList<LineReplacer> LINE_REPLACERS = ImmutableList.of(new RGBLine());
 
-    /**
-     * Replaces the given string.
-     *
-     * @param string The string to replace.
-     * @return The converted string.
-     */
-    String make(String string);
+    String make(String var1);
 
-    /**
-     * Returns {@code true} if should replace the line.
-     *
-     * @return {@code true} If should replace the line.
-     */
     boolean isSupported();
 
-    /**
-     * Replaces the given {@link java.lang.String} with custom replaces.
-     *
-     * @param user The player to get placeholders for.
-     * @param string The string to convert.
-     * @return The converted string.
-     */
-    static String makeAll(ZUser user,
-                          String string) {
-        for (LineReplacer lineReplacer : LINE_REPLACERS) {
-            if (!lineReplacer.isSupported()) {
-                continue;
+    static String makeAll(ZUser user, String string) {
+        UnmodifiableIterator var2 = LINE_REPLACERS.iterator();
+
+        while(var2.hasNext()) {
+            LineReplacer lineReplacer = (LineReplacer)var2.next();
+            if (lineReplacer.isSupported()) {
+                string = lineReplacer.make(string);
             }
-            string = lineReplacer.make(string);
         }
-        return Utils.toColor(Utils.PLACEHOLDER_SUPPORT && user != null ?
-                Utils.getWithPlaceholders(string, user.toPlayer()) :
-                string);
+
+        return Utils.toColor(Utils.PLACEHOLDER_SUPPORT && user != null ? Utils.getWithPlaceholders(string, user.toPlayer()) : string);
     }
 }

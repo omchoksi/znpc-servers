@@ -8,19 +8,25 @@ public enum CachePackage {
     MINECRAFT_SERVER("net.minecraft");
 
     private static final String EMPTY_STRING = "";
+
     private static final String DOT = ".";
+
     private final String fixedPackageName;
 
-    private CachePackage(String packageName) {
-        this.fixedPackageName = Utils.versionNewer(17) ? packageName : packageName + (packageName.contains("minecraft") ? ".server." + Utils.getBukkitPackage() : "");
+    CachePackage(String packageName) {
+        this
+
+                .fixedPackageName = Utils.versionNewer(17) ? packageName : (packageName + (packageName.contains("minecraft") ? (".server." + Utils.getBukkitPackage()) : ""));
     }
 
-    private CachePackage() {
+    CachePackage() {
         this.fixedPackageName = "";
     }
 
     public String getForCategory(CacheCategory packetCategory, String extra) {
-        return Utils.versionNewer(17) ? packetCategory.getPackageName() + (extra.length() > 0 ? "." + extra : "") : this.fixedPackageName;
+        return Utils.versionNewer(17) ? (
+                packetCategory.getPackageName() + ((extra.length() > 0) ? ("." + extra) : "")) :
+                this.fixedPackageName;
     }
 
     public String getFixedPackageName() {

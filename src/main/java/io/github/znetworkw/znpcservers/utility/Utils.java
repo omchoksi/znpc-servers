@@ -10,16 +10,21 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class Utils {
-    public static final int BUKKIT_VERSION = NumberUtils.toInt(getFormattedBukkitPackage());
+    public static final int BUKKIT_VERSION;
+
     public static final long SECOND_INTERVAL_NANOS = 1000000000L;
+
     public static boolean PLACEHOLDER_SUPPORT = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 
+    static {
+        BUKKIT_VERSION = NumberUtils.toInt(getFormattedBukkitPackage());
+    }
+
     public static boolean versionNewer(int version) {
-        return BUKKIT_VERSION >= version;
+        return (BUKKIT_VERSION >= version);
     }
 
     public static String getBukkitPackage() {
@@ -41,16 +46,13 @@ public final class Utils {
 
     public static String randomString(int length) {
         StringBuilder stringBuilder = new StringBuilder();
-
-        for(int index = 0; index < length; ++index) {
+        for (int index = 0; index < length; index++)
             stringBuilder.append(ThreadLocalRandom.current().nextInt(0, 9));
-        }
-
         return stringBuilder.toString();
     }
 
     public static void sendTitle(Player player, String title, String subTitle) {
-        player.sendTitle(toColor(title), toColor(subTitle), 0, 10, 1);
+        player.sendTitle(toColor(title), toColor(subTitle));
     }
 
     public static void setValue(Object fieldInstance, String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
@@ -67,16 +69,12 @@ public final class Utils {
 
     public static void sendPackets(ZUser user, Object... packets) {
         try {
-
             for (Object packet : packets) {
                 CacheRegistry.SEND_PACKET_METHOD.load().invoke(user.getPlayerConnection(), packet);
             }
-        } catch (InvocationTargetException | IllegalAccessException var6) {
-            var6.printStackTrace();
+        } catch (IllegalAccessException|java.lang.reflect.InvocationTargetException e) {
+            e.printStackTrace();
+            Bukkit.getLogger().severe("Error while sending packets to player " + user.toPlayer().getName());
         }
-
-    }
-
-    private Utils() {
     }
 }

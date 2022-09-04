@@ -5,11 +5,9 @@ import java.util.Arrays;
 public enum ValueType {
     ARGUMENTS {
         String resolve(String keyName, Object[] args) {
-            if (args.length == 0) {
+            if (args.length == 0)
                 throw new IllegalArgumentException("invalid size, must be > 0");
-            } else {
-                return keyName + Arrays.hashCode(args);
-            }
+            return keyName + Arrays.hashCode(args);
         }
     },
     DEFAULT {
@@ -18,8 +16,5 @@ public enum ValueType {
         }
     };
 
-    private ValueType() {
-    }
-
-    abstract String resolve(String var1, Object[] var2);
+    abstract String resolve(String paramString, Object[] paramArrayOfObject);
 }

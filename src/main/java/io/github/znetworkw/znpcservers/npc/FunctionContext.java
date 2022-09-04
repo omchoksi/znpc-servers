@@ -3,17 +3,8 @@ package io.github.znetworkw.znpcservers.npc;
 public interface FunctionContext {
     NPC getNPC();
 
-    public static class ContextWithValue extends DefaultContext implements WithValue {
-        private final String value;
-
-        public ContextWithValue(NPC npc, String value) {
-            super(npc);
-            this.value = value;
-        }
-
-        public String getValue() {
-            return this.value;
-        }
+    public static interface WithValue extends FunctionContext {
+        String getValue();
     }
 
     public static class DefaultContext implements FunctionContext {
@@ -28,7 +19,16 @@ public interface FunctionContext {
         }
     }
 
-    public interface WithValue extends FunctionContext {
-        String getValue();
+    public static class ContextWithValue extends DefaultContext implements WithValue {
+        private final String value;
+
+        public ContextWithValue(NPC npc, String value) {
+            super(npc);
+            this.value = value;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
     }
 }

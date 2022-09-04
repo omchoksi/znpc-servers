@@ -8,19 +8,33 @@ import java.util.*;
 
 public class NPCModel {
     private static final String EMPTY_STRING = "";
+
     private int id;
+
     private double hologramHeight;
+
     private String skin;
-    private String signature;
+
+    private String signature = "";
+
     private String pathName;
+
     private String glowName;
+
     private ConversationModel conversation;
+
     private ZLocation location;
+
     private NPCType npcType;
+
     private List<String> hologramLines;
+
     private List<NPCAction> clickActions;
+
     private Map<ItemSlot, ItemStack> npcEquip;
+
     private Map<String, Boolean> npcFunctions;
+
     private Map<String, String[]> customizationMap;
 
     public NPCModel(int id) {
@@ -32,13 +46,12 @@ public class NPCModel {
     }
 
     private NPCModel() {
-        this.signature = "";
         this.hologramLines = Collections.singletonList("/znpcs lines");
-        this.clickActions = new ArrayList();
-        this.npcEquip = new HashMap();
-        this.customizationMap = new HashMap();
-        this.npcFunctions = new HashMap();
-        this.npcFunctions.put("holo", true);
+        this.clickActions = new ArrayList<>();
+        this.npcEquip = new HashMap<>();
+        this.customizationMap = (Map)new HashMap<>();
+        this.npcFunctions = new HashMap<>();
+        this.npcFunctions.put("holo", Boolean.valueOf(true));
     }
 
     public int getId() {
@@ -50,7 +63,7 @@ public class NPCModel {
     }
 
     public NPCModel withId(int id) {
-        this.setId(id);
+        setId(id);
         return this;
     }
 
@@ -63,7 +76,7 @@ public class NPCModel {
     }
 
     public NPCModel withHologramHeight(double hologramHeight) {
-        this.setHologramHeight(hologramHeight);
+        setHologramHeight(hologramHeight);
         return this;
     }
 
@@ -76,7 +89,7 @@ public class NPCModel {
     }
 
     public NPCModel withSkin(String skin) {
-        this.setSkin(skin);
+        setSkin(skin);
         return this;
     }
 
@@ -89,7 +102,7 @@ public class NPCModel {
     }
 
     public NPCModel withSignature(String signature) {
-        this.setSignature(signature);
+        setSignature(signature);
         return this;
     }
 
@@ -102,7 +115,7 @@ public class NPCModel {
     }
 
     public NPCModel withPathName(String pathName) {
-        this.setPathName(pathName);
+        setPathName(pathName);
         return this;
     }
 
@@ -115,7 +128,7 @@ public class NPCModel {
     }
 
     public NPCModel withGlowName(String glowName) {
-        this.setGlowName(this.pathName);
+        setGlowName(this.pathName);
         return this;
     }
 
@@ -128,7 +141,7 @@ public class NPCModel {
     }
 
     public NPCModel withConversation(ConversationModel conversation) {
-        this.setConversation(conversation);
+        setConversation(conversation);
         return this;
     }
 
@@ -141,7 +154,7 @@ public class NPCModel {
     }
 
     public NPCModel withHologramLines(List<String> hologramLines) {
-        this.setHologramLines(hologramLines);
+        setHologramLines(hologramLines);
         return this;
     }
 
@@ -154,7 +167,7 @@ public class NPCModel {
     }
 
     public NPCModel withLocation(ZLocation location) {
-        this.setLocation(location);
+        setLocation(location);
         return this;
     }
 
@@ -167,7 +180,7 @@ public class NPCModel {
     }
 
     public NPCModel withNpcType(NPCType npcType) {
-        this.setNpcType(npcType);
+        setNpcType(npcType);
         return this;
     }
 
@@ -180,7 +193,7 @@ public class NPCModel {
     }
 
     public NPCModel withClickActions(List<NPCAction> clickActions) {
-        this.setClickActions(clickActions);
+        setClickActions(clickActions);
         return this;
     }
 
@@ -193,7 +206,7 @@ public class NPCModel {
     }
 
     public NPCModel withNpcEquip(Map<ItemSlot, ItemStack> npcEquip) {
-        this.setNpcEquip(npcEquip);
+        setNpcEquip(npcEquip);
         return this;
     }
 
@@ -206,7 +219,7 @@ public class NPCModel {
     }
 
     public NPCModel withCustomizationMap(Map<String, String[]> customizationMap) {
-        this.setCustomizationMap(customizationMap);
+        setCustomizationMap(customizationMap);
         return this;
     }
 
@@ -219,7 +232,7 @@ public class NPCModel {
     }
 
     public NPCModel withFunctionValues(Map<String, Boolean> npcFunctions) {
-        this.setFunctions(npcFunctions);
+        setFunctions(npcFunctions);
         return this;
     }
 }

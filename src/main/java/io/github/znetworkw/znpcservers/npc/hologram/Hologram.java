@@ -74,7 +74,7 @@ public class Hologram {
     public void delete(ZUser user) {
         this.hologramLines.forEach((hologramLine) -> {
             try {
-                Utils.sendPackets(user, new Object[]{this.npc.getPackets().getProxyInstance().getDestroyPacket(hologramLine.id)});
+                Utils.sendPackets(user, this.npc.getPackets().getProxyInstance().getDestroyPacket(hologramLine.id));
             } catch (ReflectiveOperationException var4) {
                 throw new UnexpectedCallException(var4);
             }

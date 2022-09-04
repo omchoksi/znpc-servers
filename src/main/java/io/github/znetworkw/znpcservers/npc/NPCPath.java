@@ -20,250 +20,45 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public interface NPCPath {
-    void initialize(DataInputStream var1) throws IOException;
+    void initialize(DataInputStream paramDataInputStream) throws IOException;
 
-    void write(DataOutputStream var1) throws IOException;
+    void write(DataOutputStream paramDataOutputStream) throws IOException;
 
     void start();
 
-    PathInitializer getPath(NPC var1);
+    PathInitializer getPath(NPC paramNPC);
 
-    public abstract static class AbstractTypeWriter implements NPCPath {
-        private static final Logger LOGGER = Logger.getLogger(AbstractTypeWriter.class.getName());
-        private static final ConcurrentMap<String, AbstractTypeWriter> PATH_TYPES = new ConcurrentHashMap();
-        private static final int PATH_DELAY = 1;
-        private final TypeWriter typeWriter;
-        private final File file;
-        private final List<ZLocation> locationList;
+    public static interface PathInitializer {
+        void handle();
 
-        public AbstractTypeWriter(TypeWriter typeWriter, File file) {
-            this.typeWriter = typeWriter;
-            this.file = file;
-            this.locationList = new ArrayList();
-        }
+        ZLocation getLocation();
 
-        public AbstractTypeWriter(TypeWriter typeWriter, String pathName) {
-            this(typeWriter, new File(ServersNPC.PATH_FOLDER, pathName + ".path"));
-        }
+        public static abstract class AbstractPath implements PathInitializer {
+            private final NPC npc;
 
-        public void load() {
-            try {
-                DataInputStream reader = ZNPCPathDelegator.forFile(this.file).getInputStream();
+            private final NPCPath.AbstractTypeWriter typeWriter;
 
-                try {
-                    this.initialize(reader);
-                    register(this);
-                } catch (Throwable var5) {
-                    if (reader != null) {
-                        try {
-                            reader.close();
-                        } catch (Throwable var4) {
-                            var5.addSuppressed(var4);
-                        }
-                    }
+            private ZLocation location;
 
-                    throw var5;
-                }
-
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (IOException var6) {
-                LOGGER.log(Level.WARNING, String.format("The path %s could not be loaded", this.file.getName()));
+            public AbstractPath(NPC npc, NPCPath.AbstractTypeWriter typeWriter) {
+                this.npc = npc;
+                this.typeWriter = typeWriter;
             }
 
-        }
-
-        public void write() {
-            try {
-                DataOutputStream writer = ZNPCPathDelegator.forFile(this.getFile()).getOutputStream();
-
-                try {
-                    this.write(writer);
-                } catch (Throwable var5) {
-                    if (writer != null) {
-                        try {
-                            writer.close();
-                        } catch (Throwable var4) {
-                            var5.addSuppressed(var4);
-                        }
-                    }
-
-                    throw var5;
-                }
-
-                if (writer != null) {
-                    writer.close();
-                }
-            } catch (IOException var6) {
-                LOGGER.log(Level.WARNING, String.format("Path %s could not be created", this.getName()), var6);
+            public NPC getNpc() {
+                return this.npc;
             }
 
-        }
-
-        public static AbstractTypeWriter forCreation(String pathName, ZUser user, TypeWriter typeWriter) {
-            if (typeWriter == TypeWriter.MOVEMENT) {
-                return new TypeMovement(pathName, user);
-            } else {
-                throw new IllegalStateException("can't find type writer for: " + typeWriter.name());
-            }
-        }
-
-        public static AbstractTypeWriter forFile(File file, TypeWriter typeWriter) {
-            if (typeWriter == TypeWriter.MOVEMENT) {
-                return new TypeMovement(file);
-            } else {
-                throw new IllegalStateException("can't find type writer for: " + typeWriter.name());
-            }
-        }
-
-        public File getFile() {
-            return this.file;
-        }
-
-        public List<ZLocation> getLocationList() {
-            return this.locationList;
-        }
-
-        public String getName() {
-            return this.file.getName().substring(0, this.file.getName().lastIndexOf(46));
-        }
-
-        public static void register(AbstractTypeWriter abstractZNPCPath) {
-            PATH_TYPES.put(abstractZNPCPath.getName(), abstractZNPCPath);
-        }
-
-        public static AbstractTypeWriter find(String name) {
-            return (AbstractTypeWriter)PATH_TYPES.get(name);
-        }
-
-        public static Collection<AbstractTypeWriter> getPaths() {
-            return PATH_TYPES.values();
-        }
-
-        private static class TypeMovement extends AbstractTypeWriter {
-            private static final int MAX_LOCATIONS;
-            private ZUser npcUser;
-            private BukkitTask bukkitTask;
-
-            public TypeMovement(File file) {
-                super(TypeWriter.MOVEMENT, file);
+            public NPCPath.AbstractTypeWriter getPath() {
+                return this.typeWriter;
             }
 
-            public TypeMovement(String fileName, ZUser npcUser) {
-                super(TypeWriter.MOVEMENT, fileName);
-                this.npcUser = npcUser;
-                this.start();
+            public void setLocation(ZLocation location) {
+                this.location = location;
             }
 
-            public void initialize(DataInputStream dataInputStream) throws IOException {
-                while(dataInputStream.available() > 0) {
-                    String worldName = dataInputStream.readUTF();
-                    double x = dataInputStream.readDouble();
-                    double y = dataInputStream.readDouble();
-                    double z = dataInputStream.readDouble();
-                    float yaw = dataInputStream.readFloat();
-                    float pitch = dataInputStream.readFloat();
-                    this.getLocationList().add(new ZLocation(worldName, x, y, z, yaw, pitch));
-                }
-
-            }
-
-            public void write(DataOutputStream dataOutputStream) throws IOException {
-                if (!this.getLocationList().isEmpty()) {
-                    Iterator locationIterator = this.getLocationList().iterator();
-
-                    while(locationIterator.hasNext()) {
-                        ZLocation location = (ZLocation)locationIterator.next();
-                        dataOutputStream.writeUTF(location.getWorldName());
-                        dataOutputStream.writeDouble(location.getX());
-                        dataOutputStream.writeDouble(location.getY());
-                        dataOutputStream.writeDouble(location.getZ());
-                        dataOutputStream.writeFloat(location.getYaw());
-                        dataOutputStream.writeFloat(location.getPitch());
-                        if (!locationIterator.hasNext()) {
-                            register(this);
-                        }
-                    }
-
-                }
-            }
-
-            public void start() {
-                this.npcUser.setHasPath(true);
-                this.bukkitTask = ServersNPC.SCHEDULER.runTaskTimerAsynchronously(() -> {
-                    if (this.npcUser.toPlayer() != null && this.npcUser.isHasPath() && MAX_LOCATIONS > this.getLocationList().size()) {
-                        Location location = this.npcUser.toPlayer().getLocation();
-                        if (this.isValid(location)) {
-                            this.getLocationList().add(new ZLocation(location));
-                        }
-                    } else {
-                        this.bukkitTask.cancel();
-                        this.npcUser.setHasPath(false);
-                        this.write();
-                    }
-
-                }, 1, 1);
-            }
-
-            public MovementPath getPath(NPC npc) {
-                return new MovementPath(npc, this);
-            }
-
-            protected boolean isValid(Location location) {
-                if (this.getLocationList().isEmpty()) {
-                    return true;
-                } else {
-                    ZLocation last = (ZLocation)this.getLocationList().get(this.getLocationList().size() - 1);
-                    double xDiff = Math.abs(last.getX() - location.getX());
-                    double yDiff = Math.abs(last.getY() - location.getY());
-                    double zDiff = Math.abs(last.getZ() - location.getZ());
-                    return xDiff + yDiff + zDiff > 0.01D;
-                }
-            }
-
-            static {
-                MAX_LOCATIONS = (Integer)Configuration.CONFIGURATION.getValue(ConfigurationValue.MAX_PATH_LOCATIONS);
-            }
-
-            protected static class MovementPath extends PathInitializer.AbstractPath {
-                private int currentEntryPath = 0;
-                private boolean pathReverse = false;
-
-                public MovementPath(NPC npc, TypeMovement path) {
-                    super(npc, path);
-                }
-
-                public void handle() {
-                    this.updatePathLocation((ZLocation)this.getPath().getLocationList().get(this.currentEntryPath = this.getNextLocation()));
-                    int nextIndex = this.getNextLocation();
-                    if (nextIndex < 1) {
-                        this.pathReverse = false;
-                    } else if (nextIndex >= this.getPath().getLocationList().size() - 1) {
-                        this.pathReverse = true;
-                    }
-
-                }
-
-                private int getNextLocation() {
-                    return this.pathReverse ? this.currentEntryPath - 1 : this.currentEntryPath + 1;
-                }
-
-                protected void updatePathLocation(ZLocation location) {
-                    this.setLocation(location);
-                    ZLocation next = (ZLocation)this.getPath().getLocationList().get(this.getNextLocation());
-                    Vector vector = next.toVector().add(new Vector(0.0D, location.getY() - next.getY(), 0.0D));
-                    Location direction = next.bukkitLocation().clone().setDirection(location.toVector().subtract(vector).multiply(new Vector(-1, 0, -1)));
-                    this.getNpc().setLocation(direction, false);
-                    this.getNpc().lookAt((ZUser)null, direction, true);
-                }
-            }
-        }
-
-        public static enum TypeWriter {
-            MOVEMENT;
-
-            private TypeWriter() {
+            public ZLocation getLocation() {
+                return this.location;
             }
         }
     }
@@ -287,40 +82,224 @@ public interface NPCPath {
             return new ZNPCPathDelegator(file);
         }
 
-        public static ZNPCPathDelegator forPath(AbstractTypeWriter pathAbstract) {
+        public static ZNPCPathDelegator forPath(NPCPath.AbstractTypeWriter pathAbstract) {
             return new ZNPCPathDelegator(pathAbstract.getFile());
         }
     }
 
-    public interface PathInitializer {
-        void handle();
+    public static abstract class AbstractTypeWriter implements NPCPath {
+        private static final Logger LOGGER = Logger.getLogger(AbstractTypeWriter.class.getName());
 
-        ZLocation getLocation();
+        private static final ConcurrentMap<String, AbstractTypeWriter> PATH_TYPES = new ConcurrentHashMap<>();
 
-        public abstract static class AbstractPath implements PathInitializer {
-            private final NPC npc;
-            private final AbstractTypeWriter typeWriter;
-            private ZLocation location;
+        private static final int PATH_DELAY = 1;
 
-            public AbstractPath(NPC npc, AbstractTypeWriter typeWriter) {
-                this.npc = npc;
-                this.typeWriter = typeWriter;
+        private final TypeWriter typeWriter;
+
+        private final File file;
+
+        private final List<ZLocation> locationList;
+
+        public AbstractTypeWriter(TypeWriter typeWriter, File file) {
+            this.typeWriter = typeWriter;
+            this.file = file;
+            this.locationList = new ArrayList<>();
+        }
+
+        public AbstractTypeWriter(TypeWriter typeWriter, String pathName) {
+            this(typeWriter, new File(ServersNPC.PATH_FOLDER, pathName + ".path"));
+        }
+
+        public void load() {
+            try {
+                DataInputStream reader = NPCPath.ZNPCPathDelegator.forFile(this.file).getInputStream();
+                try {
+                    initialize(reader);
+                    register(this);
+                    if (reader != null)
+                        reader.close();
+                } catch (Throwable throwable) {
+                    if (reader != null)
+                        try {
+                            reader.close();
+                        } catch (Throwable throwable1) {
+                            throwable.addSuppressed(throwable1);
+                        }
+                    throw throwable;
+                }
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, String.format("The path %s could not be loaded", new Object[] { this.file.getName() }));
+            }
+        }
+
+        public void write() {
+            try {
+                DataOutputStream writer = NPCPath.ZNPCPathDelegator.forFile(getFile()).getOutputStream();
+                try {
+                    write(writer);
+                    if (writer != null)
+                        writer.close();
+                } catch (Throwable throwable) {
+                    if (writer != null)
+                        try {
+                            writer.close();
+                        } catch (Throwable throwable1) {
+                            throwable.addSuppressed(throwable1);
+                        }
+                    throw throwable;
+                }
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, String.format("Path %s could not be created", new Object[] { getName() }), e);
+            }
+        }
+
+        public static AbstractTypeWriter forCreation(String pathName, ZUser user, TypeWriter typeWriter) {
+            if (typeWriter == TypeWriter.MOVEMENT)
+                return new TypeMovement(pathName, user);
+            throw new IllegalStateException("can't find type writer for: " + typeWriter.name());
+        }
+
+        public static AbstractTypeWriter forFile(File file, TypeWriter typeWriter) {
+            if (typeWriter == TypeWriter.MOVEMENT)
+                return new TypeMovement(file);
+            throw new IllegalStateException("can't find type writer for: " + typeWriter.name());
+        }
+
+        public File getFile() {
+            return this.file;
+        }
+
+        public List<ZLocation> getLocationList() {
+            return this.locationList;
+        }
+
+        public String getName() {
+            return this.file.getName().substring(0, this.file.getName().lastIndexOf('.'));
+        }
+
+        public static void register(AbstractTypeWriter abstractZNPCPath) {
+            PATH_TYPES.put(abstractZNPCPath.getName(), abstractZNPCPath);
+        }
+
+        public static AbstractTypeWriter find(String name) {
+            return PATH_TYPES.get(name);
+        }
+
+        public static Collection<AbstractTypeWriter> getPaths() {
+            return PATH_TYPES.values();
+        }
+
+        public enum TypeWriter {
+            MOVEMENT;
+        }
+
+        private static class TypeMovement extends AbstractTypeWriter {
+            private static final int MAX_LOCATIONS = ((Integer)Configuration.CONFIGURATION.getValue(ConfigurationValue.MAX_PATH_LOCATIONS)).intValue();
+
+            private ZUser npcUser;
+
+            private BukkitTask bukkitTask;
+
+            public TypeMovement(File file) {
+                super(NPCPath.AbstractTypeWriter.TypeWriter.MOVEMENT, file);
             }
 
-            public NPC getNpc() {
-                return this.npc;
+            public TypeMovement(String fileName, ZUser npcUser) {
+                super(NPCPath.AbstractTypeWriter.TypeWriter.MOVEMENT, fileName);
+                this.npcUser = npcUser;
+                start();
             }
 
-            public AbstractTypeWriter getPath() {
-                return this.typeWriter;
+            public void initialize(DataInputStream dataInputStream) throws IOException {
+                while (dataInputStream.available() > 0) {
+                    String worldName = dataInputStream.readUTF();
+                    double x = dataInputStream.readDouble();
+                    double y = dataInputStream.readDouble();
+                    double z = dataInputStream.readDouble();
+                    float yaw = dataInputStream.readFloat();
+                    float pitch = dataInputStream.readFloat();
+                    getLocationList().add(new ZLocation(worldName, x, y, z, yaw, pitch));
+                }
             }
 
-            public void setLocation(ZLocation location) {
-                this.location = location;
+            public void write(DataOutputStream dataOutputStream) throws IOException {
+                if (getLocationList().isEmpty())
+                    return;
+                Iterator<ZLocation> locationIterator = getLocationList().iterator();
+                while (locationIterator.hasNext()) {
+                    ZLocation location = locationIterator.next();
+                    dataOutputStream.writeUTF(location.getWorldName());
+                    dataOutputStream.writeDouble(location.getX());
+                    dataOutputStream.writeDouble(location.getY());
+                    dataOutputStream.writeDouble(location.getZ());
+                    dataOutputStream.writeFloat(location.getYaw());
+                    dataOutputStream.writeFloat(location.getPitch());
+                    if (!locationIterator.hasNext())
+                        register(this);
+                }
             }
 
-            public ZLocation getLocation() {
-                return this.location;
+            public void start() {
+                this.npcUser.setHasPath(true);
+                this.bukkitTask = ServersNPC.SCHEDULER.runTaskTimerAsynchronously(() -> {
+                    if (this.npcUser.toPlayer() != null && this.npcUser.isHasPath() && MAX_LOCATIONS > getLocationList().size()) {
+                        Location location = this.npcUser.toPlayer().getLocation();
+                        if (isValid(location))
+                            getLocationList().add(new ZLocation(location));
+                    } else {
+                        this.bukkitTask.cancel();
+                        this.npcUser.setHasPath(false);
+                        write();
+                    }
+                },1, 1);
+            }
+
+            public MovementPath getPath(NPC npc) {
+                return new MovementPath(npc, this);
+            }
+
+            protected boolean isValid(Location location) {
+                if (getLocationList().isEmpty())
+                    return true;
+                ZLocation last = getLocationList().get(getLocationList().size() - 1);
+                double xDiff = Math.abs(last.getX() - location.getX());
+                double yDiff = Math.abs(last.getY() - location.getY());
+                double zDiff = Math.abs(last.getZ() - location.getZ());
+                return (xDiff + yDiff + zDiff > 0.01D);
+            }
+
+            protected static class MovementPath extends NPCPath.PathInitializer.AbstractPath {
+                private int currentEntryPath = 0;
+
+                private boolean pathReverse = false;
+
+                public MovementPath(NPC npc, NPCPath.AbstractTypeWriter.TypeMovement path) {
+                    super(npc, path);
+                }
+
+                public void handle() {
+                    updatePathLocation(getPath().getLocationList().get(this.currentEntryPath = getNextLocation()));
+                    int nextIndex = getNextLocation();
+                    if (nextIndex < 1) {
+                        this.pathReverse = false;
+                    } else if (nextIndex >= getPath().getLocationList().size() - 1) {
+                        this.pathReverse = true;
+                    }
+                }
+
+                private int getNextLocation() {
+                    return this.pathReverse ? (this.currentEntryPath - 1) : (this.currentEntryPath + 1);
+                }
+
+                protected void updatePathLocation(ZLocation location) {
+                    setLocation(location);
+                    ZLocation next = getPath().getLocationList().get(getNextLocation());
+                    Vector vector = next.toVector().add(new Vector(0.0D, location.getY() - next.getY(), 0.0D));
+                    Location direction = next.bukkitLocation().clone().setDirection(location.toVector().subtract(vector)
+                            .multiply(new Vector(-1, 0, -1)));
+                    getNpc().setLocation(direction, false);
+                    getNpc().lookAt(null, direction, true);
+                }
             }
         }
     }

@@ -7,11 +7,15 @@ import io.github.znetworkw.znpcservers.user.ZUser;
 import io.github.znetworkw.znpcservers.utility.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 public class NPCAction {
     private final ActionType actionType;
+
     private final ClickType clickType;
+
     private final String action;
+
     private int delay;
 
     public NPCAction(ActionType actionType, ClickType clickType, String action, int delay) {
@@ -46,7 +50,7 @@ public class NPCAction {
     }
 
     public long getFixedDelay() {
-        return 1000000000L * (long)this.delay;
+        return 1000000000L * this.delay;
     }
 
     public void run(ZUser user, String action) {
@@ -54,10 +58,15 @@ public class NPCAction {
     }
 
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("actionType", this.actionType).add("clickType", this.clickType).add("action", this.action).add("delay", this.delay).toString();
+        return MoreObjects.toStringHelper(this)
+                .add("actionType", this.actionType)
+                .add("clickType", this.clickType)
+                .add("action", this.action)
+                .add("delay", this.delay)
+                .toString();
     }
 
-    static enum ActionType {
+    enum ActionType {
         CMD {
             public void run(ZUser user, String actionValue) {
                 user.toPlayer().performCommand(actionValue);
@@ -65,7 +74,7 @@ public class NPCAction {
         },
         CONSOLE {
             public void run(ZUser user, String actionValue) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), actionValue);
+                Bukkit.dispatchCommand((CommandSender)Bukkit.getConsoleSender(), actionValue);
             }
         },
         CHAT {
@@ -84,9 +93,6 @@ public class NPCAction {
             }
         };
 
-        private ActionType() {
-        }
-
-        public abstract void run(ZUser var1, String var2);
+        public abstract void run(ZUser param1ZUser, String param1String);
     }
 }

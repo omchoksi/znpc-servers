@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.plugin.Plugin;
 
 public class InventoryListener implements Listener {
     public InventoryListener(ServersNPC serversNPC) {
@@ -15,17 +16,17 @@ public class InventoryListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (event.getWhoClicked() instanceof Player) {
-            if (event.getCurrentItem() != null) {
-                if (event.getInventory().getHolder() instanceof ZInventoryHolder) {
-                    event.setCancelled(true);
-                    ZInventory zInventory = ((ZInventoryHolder)event.getInventory().getHolder()).getzInventory();
-                    if (zInventory.getPage().containsItem(event.getRawSlot())) {
-                        zInventory.getPage().findItem(event.getRawSlot()).getInventoryCallback().onClick(event);
-                        ((Player)event.getWhoClicked()).updateInventory();
-                    }
-                }
-            }
-        }
+        if (!(event.getWhoClicked() instanceof Player))
+            return;
+        if (event.getCurrentItem() == null)
+            return;
+        if (!(event.getInventory().getHolder() instanceof ZInventoryHolder))
+            return;
+        event.setCancelled(true);
+        ZInventory zInventory = ((ZInventoryHolder)event.getInventory().getHolder()).getzInventory();
+        if (!zInventory.getPage().containsItem(event.getRawSlot()))
+            return;
+        zInventory.getPage().findItem(event.getRawSlot()).getInventoryCallback().onClick(event);
+        ((Player)event.getWhoClicked()).updateInventory();
     }
 }

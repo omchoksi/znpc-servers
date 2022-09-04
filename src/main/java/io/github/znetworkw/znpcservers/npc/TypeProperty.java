@@ -13,7 +13,7 @@ public enum TypeProperty {
 
     private final Function<String, ?> function;
 
-    private TypeProperty(Function<String, ?> function) {
+    TypeProperty(Function<String, ?> function) {
         this.function = function;
     }
 
@@ -22,20 +22,20 @@ public enum TypeProperty {
     }
 
     public static TypeProperty forType(Class<?> primitiveType) {
-        if (primitiveType == String.class) {
+        if (primitiveType == String.class)
             return STRING;
-        } else if (primitiveType == Boolean.TYPE) {
+        if (primitiveType == boolean.class)
             return BOOLEAN;
-        } else if (primitiveType == Integer.TYPE) {
+        if (primitiveType == int.class)
             return INT;
-        } else if (primitiveType == Double.TYPE) {
+        if (primitiveType == double.class)
             return DOUBLE;
-        } else if (primitiveType == Float.TYPE) {
+        if (primitiveType == float.class)
             return FLOAT;
-        } else if (primitiveType == Short.TYPE) {
+        if (primitiveType == short.class)
             return SHORT;
-        } else {
-            return primitiveType == Long.TYPE ? LONG : null;
-        }
+        if (primitiveType == long.class)
+            return LONG;
+        return null;
     }
 }

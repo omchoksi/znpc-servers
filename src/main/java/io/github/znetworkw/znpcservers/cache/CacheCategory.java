@@ -1,7 +1,7 @@
 package io.github.znetworkw.znpcservers.cache;
 
 public enum CacheCategory {
-    DEFAULT,
+    DEFAULT(""),
     NETWORK("network"),
     PROTOCOL("network.protocol"),
     CHAT("network.chat"),
@@ -17,22 +17,19 @@ public enum CacheCategory {
     SERVER("server");
 
     private static final String EMPTY_STRING = "";
+
     private final String subPackageName;
+
     private final String packageName;
 
-    private CacheCategory(String subPackageName) {
+    CacheCategory(String subPackageName) {
         this.subPackageName = subPackageName;
         StringBuilder stringBuilder = new StringBuilder(CachePackage.MINECRAFT_SERVER.getFixedPackageName());
         if (subPackageName.length() > 0) {
             stringBuilder.append(".");
             stringBuilder.append(subPackageName);
         }
-
         this.packageName = stringBuilder.toString();
-    }
-
-    private CacheCategory() {
-        this("");
     }
 
     public String getSubPackageName() {

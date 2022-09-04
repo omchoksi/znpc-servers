@@ -2,7 +2,6 @@ package io.github.znetworkw.znpcservers.listeners;
 
 import io.github.znetworkw.znpcservers.ServersNPC;
 import io.github.znetworkw.znpcservers.npc.conversation.ConversationModel;
-import io.github.znetworkw.znpcservers.npc.conversation.ConversationModel.ConversationType;
 import io.github.znetworkw.znpcservers.npc.event.NPCInteractEvent;
 import io.github.znetworkw.znpcservers.user.EventService;
 import io.github.znetworkw.znpcservers.user.ZUser;
@@ -11,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 
 public class PlayerListener implements Listener {
     public PlayerListener(ServersNPC serversNPC) {
@@ -27,9 +27,7 @@ public class PlayerListener implements Listener {
         ZUser.unregister(event.getPlayer());
     }
 
-    @EventHandler(
-            ignoreCancelled = true
-    )
+    @EventHandler(ignoreCancelled = true)
     public void onTalk(AsyncPlayerChatEvent event) {
         ZUser zUser = ZUser.find(event.getPlayer());
         if (EventService.hasService(zUser, AsyncPlayerChatEvent.class)) {
@@ -38,14 +36,14 @@ public class PlayerListener implements Listener {
             eventService.runAll(event);
             zUser.getEventServices().remove(eventService);
         }
-
     }
 
     @EventHandler
     public void onConversation(NPCInteractEvent event) {
         ConversationModel conversationStorage = event.getNpc().getNpcPojo().getConversation();
-        if (conversationStorage != null && conversationStorage.getConversationType() == ConversationType.CLICK) {
-            event.getNpc().tryStartConversation(event.getPlayer());
-        }
+        if (conversationStorage == null || conversationStorage
+                .getConversationType() != ConversationModel.ConversationType.CLICK)
+            return;
+        event.getNpc().tryStartConversation(event.getPlayer());
     }
 }

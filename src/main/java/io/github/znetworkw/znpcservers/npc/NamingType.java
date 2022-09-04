@@ -11,8 +11,5 @@ public enum NamingType {
 
     private static final int FIXED_LENGTH = 6;
 
-    private NamingType() {
-    }
-
-    public abstract String resolve(NPC var1);
+    public abstract String resolve(NPC paramNPC);
 }

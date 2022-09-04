@@ -13,19 +13,19 @@ public class SchedulerUtils {
     }
 
     public BukkitTask runTaskTimer(BukkitRunnable bukkitRunnable, int delay) {
-        return this.runTaskTimer(bukkitRunnable, delay, delay);
+        return runTaskTimer(bukkitRunnable, delay, delay);
     }
 
     public BukkitTask runTaskTimer(BukkitRunnable bukkitRunnable, int delay, int continuousDelay) {
-        return bukkitRunnable.runTaskTimer(this.plugin, (long)delay, (long)continuousDelay);
+        return bukkitRunnable.runTaskTimer(this.plugin, delay, continuousDelay);
     }
 
     public BukkitTask runTaskTimerAsynchronously(Runnable runnable, int delay, int continuousDelay) {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, runnable, (long)delay, (long)continuousDelay);
+        return Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, runnable, delay, continuousDelay);
     }
 
     public void scheduleSyncDelayedTask(Runnable runnable, int delay) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, runnable, (long)delay);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, runnable, delay);
     }
 
     public BukkitTask runTask(Runnable runnable) {

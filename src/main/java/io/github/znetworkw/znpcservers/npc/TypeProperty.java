@@ -13,29 +13,35 @@ public enum TypeProperty {
 
     private final Function<String, ?> function;
 
-    private TypeProperty(Function<String, ?> function) {
+    /**
+     * Creates a new parser for a primitive type.
+     *
+     * @param function The primitive type parse function.
+     */
+    TypeProperty(Function<String, ?> function) {
         this.function = function;
     }
 
     public Function<String, ?> getFunction() {
-        return this.function;
+        return function;
     }
 
     public static TypeProperty forType(Class<?> primitiveType) {
-        if (primitiveType == String.class) {
+        if (primitiveType == String.class)
             return STRING;
-        } else if (primitiveType == Boolean.TYPE) {
+        else if (primitiveType == boolean.class)
             return BOOLEAN;
-        } else if (primitiveType == Integer.TYPE) {
+        else if (primitiveType == int.class)
             return INT;
-        } else if (primitiveType == Double.TYPE) {
+        else if (primitiveType == double.class)
             return DOUBLE;
-        } else if (primitiveType == Float.TYPE) {
+        else if (primitiveType == float.class)
             return FLOAT;
-        } else if (primitiveType == Short.TYPE) {
+        else if (primitiveType == short.class)
             return SHORT;
-        } else {
-            return primitiveType == Long.TYPE ? LONG : null;
-        }
+        else if (primitiveType == long.class)
+            return LONG;
+        else
+            return null;
     }
 }

@@ -31,7 +31,11 @@ public class EventService<T extends Event> {
     }
 
     public void runAll(T event) {
-        ServersNPC.SCHEDULER.runTask(() -> this.eventConsumers.forEach((consumer) -> consumer.accept(event)));
+        ServersNPC.SCHEDULER.runTask(() -> {
+            this.eventConsumers.forEach((consumer) -> {
+                consumer.accept(event);
+            });
+        });
     }
 
     public static <T extends Event> EventService<T> addService(ZUser user, Class<T> eventClass) {
@@ -46,12 +50,16 @@ public class EventService<T extends Event> {
     }
 
     public static <T extends Event> EventService<T> findService(ZUser user, Class<T> eventClass) {
-        Stream<EventService<?>> var10000 = user.getEventServices().stream().filter((eventService) -> eventService.getEventClass().isAssignableFrom(eventClass));
+        Stream var10000 = user.getEventServices().stream().filter((eventService) -> {
+            return eventService.getEventClass().isAssignableFrom(eventClass);
+        });
         Objects.requireNonNull(EventService.class);
-        return (EventService<T>) var10000.map(EventService.class::cast).findFirst().orElse(null);
+        return (EventService)var10000.map(EventService.class::cast).findFirst().orElse(null);
     }
 
     public static boolean hasService(ZUser user, Class<? extends Event> eventClass) {
-        return user.getEventServices().stream().anyMatch((eventService) -> eventService.getEventClass() == eventClass);
+        return user.getEventServices().stream().anyMatch((eventService) -> {
+            return eventService.getEventClass() == eventClass;
+        });
     }
 }

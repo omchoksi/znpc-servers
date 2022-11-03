@@ -40,7 +40,7 @@ public class PacketV8 implements Packet {
     }
 
     public Object getMetadataPacket(int entityId, Object nmsEntity) throws ReflectiveOperationException {
-        return ((Constructor)CacheRegistry.PACKET_PLAY_OUT_ENTITY_META_DATA_CONSTRUCTOR.load()).newInstance(entityId, ((Method)CacheRegistry.GET_DATA_WATCHER_METHOD.load()).invoke(nmsEntity), true);
+        return CacheRegistry.PACKET_PLAY_OUT_ENTITY_META_DATA_CONSTRUCTOR.load().newInstance(entityId, CacheRegistry.GET_DATA_WATCHER_METHOD.load().invoke(nmsEntity), true);
     }
 
     public Object getHologramSpawnPacket(Object armorStand) throws ReflectiveOperationException {

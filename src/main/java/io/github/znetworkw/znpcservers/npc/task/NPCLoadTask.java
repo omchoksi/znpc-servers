@@ -18,7 +18,7 @@ public class NPCLoadTask extends BukkitRunnable {
     }
 
     public void run() {
-        if (this.tries++ > 10) {
+        if (this.tries++ > MAX_TRIES) {
             this.cancel();
         } else {
             World world = Bukkit.getWorld(this.npc.getNpcPojo().getLocation().getWorldName());

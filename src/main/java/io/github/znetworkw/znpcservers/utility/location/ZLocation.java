@@ -13,7 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 public class ZLocation {
-    public static final ZLocation.ZLocationSerializer SERIALIZER = new ZLocation.ZLocationSerializer();
+    public static final ZLocationSerializer SERIALIZER = new ZLocationSerializer();
     private final String worldName;
     private final double x;
     private final double y;

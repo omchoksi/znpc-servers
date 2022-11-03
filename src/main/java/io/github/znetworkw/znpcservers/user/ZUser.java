@@ -13,6 +13,7 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -30,18 +31,18 @@ public class ZUser {
 
     public ZUser(UUID uuid) {
         this.uuid = uuid;
-        this.lastClicked = new HashMap<>();
-        this.eventServices = new ArrayList<>();
+        this.lastClicked = new HashMap();
+        this.eventServices = new ArrayList();
 
         try {
-            Object playerHandle = CacheRegistry.GET_HANDLE_PLAYER_METHOD.load().invoke(this.toPlayer());
-            this.gameProfile = (GameProfile) CacheRegistry.GET_PROFILE_METHOD.load().invoke(playerHandle);
-            Channel channel = (Channel) CacheRegistry.CHANNEL_FIELD.load().get(CacheRegistry.NETWORK_MANAGER_FIELD.load().get(this.playerConnection = CacheRegistry.PLAYER_CONNECTION_FIELD.load().get(playerHandle)));
+            Object playerHandle = (CacheRegistry.GET_HANDLE_PLAYER_METHOD.load()).invoke(this.toPlayer());
+            this.gameProfile = (GameProfile)(CacheRegistry.GET_PROFILE_METHOD.load()).invoke(playerHandle);
+            Channel channel = (Channel)((Field)CacheRegistry.CHANNEL_FIELD.load()).get(((Field)CacheRegistry.NETWORK_MANAGER_FIELD.load()).get(this.playerConnection = ((Field)CacheRegistry.PLAYER_CONNECTION_FIELD.load()).get(playerHandle)));
             if (channel.pipeline().names().contains("npc_interact")) {
                 channel.pipeline().remove("npc_interact");
             }
 
-            channel.pipeline().addAfter("decoder", "npc_interact", new ZUser.ZNPCSocketDecoder());
+            channel.pipeline().addAfter("decoder", "npc_interact", new ZNPCSocketDecoder());
         } catch (InvocationTargetException | IllegalAccessException var4) {
             throw new IllegalStateException("can't create player " + uuid.toString(), var4.getCause());
         }
@@ -76,7 +77,7 @@ public class ZUser {
     }
 
     public static ZUser find(UUID uuid) {
-        return USER_MAP.computeIfAbsent(uuid, ZUser::new);
+        return (ZUser)USER_MAP.computeIfAbsent(uuid, ZUser::new);
     }
 
     public static ZUser find(Player player) {
@@ -84,12 +85,16 @@ public class ZUser {
     }
 
     public static void unregister(Player player) {
-        ZUser zUser = USER_MAP.get(player.getUniqueId());
+        ZUser zUser = (ZUser)USER_MAP.get(player.getUniqueId());
         if (zUser == null) {
             throw new IllegalStateException("can't find user " + player.getUniqueId());
         } else {
             USER_MAP.remove(player.getUniqueId());
-            NPC.all().stream().filter((npc) -> npc.getViewers().contains(zUser)).forEach((npc) -> npc.delete(zUser));
+            NPC.all().stream().filter((npc) -> {
+                return npc.getViewers().contains(zUser);
+            }).forEach((npc) -> {
+                npc.delete(zUser);
+            });
         }
     }
 
@@ -106,7 +111,9 @@ public class ZUser {
                 }
 
                 int entityId = CacheRegistry.PACKET_IN_USE_ENTITY_ID_FIELD.load().getInt(packet);
-                NPC npc = NPC.all().stream().filter((npc1) -> npc1.getEntityID() == entityId).findFirst().orElse(null);
+                NPC npc = (NPC)NPC.all().stream().filter((npc1) -> {
+                    return npc1.getEntityID() == entityId;
+                }).findFirst().orElse(null);
                 if (npc == null) {
                     return;
                 }
@@ -117,7 +124,7 @@ public class ZUser {
                     Bukkit.getServer().getPluginManager().callEvent(new NPCInteractEvent(ZUser.this.toPlayer(), clickName, npc));
                     List<NPCAction> actions = npc.getNpcPojo().getClickActions();
                     if (actions != null && !actions.isEmpty()) {
-                        Iterator<NPCAction> var4 = actions.iterator();
+                        Iterator var4 = actions.iterator();
 
                         while(true) {
                             NPCAction npcAction;
@@ -127,7 +134,7 @@ public class ZUser {
                                         return;
                                     }
 
-                                    npcAction = var4.next();
+                                    npcAction = (NPCAction)var4.next();
                                 } while(npcAction.getClickType() != ClickType.DEFAULT && clickName != npcAction.getClickType());
 
                                 if (npcAction.getDelay() <= 0) {
@@ -136,7 +143,7 @@ public class ZUser {
 
                                 int actionId = npc.getNpcPojo().getClickActions().indexOf(npcAction);
                                 if (ZUser.this.lastClicked.containsKey(actionId)) {
-                                    long lastClickNanos = System.nanoTime() - ZUser.this.lastClicked.get(actionId);
+                                    long lastClickNanos = System.nanoTime() - (Long)ZUser.this.lastClicked.get(actionId);
                                     if (lastClickNanos < npcAction.getFixedDelay()) {
                                         continue;
                                     }

@@ -11,6 +11,7 @@ import io.github.znetworkw.znpcservers.listeners.InventoryListener;
 import io.github.znetworkw.znpcservers.listeners.PlayerListener;
 import io.github.znetworkw.znpcservers.npc.NPC;
 import io.github.znetworkw.znpcservers.npc.NPCModel;
+import io.github.znetworkw.znpcservers.npc.NPCPath;
 import io.github.znetworkw.znpcservers.npc.NPCType;
 import io.github.znetworkw.znpcservers.npc.NPCPath.AbstractTypeWriter;
 import io.github.znetworkw.znpcservers.npc.NPCPath.AbstractTypeWriter.TypeWriter;
@@ -69,7 +70,7 @@ public class ServersNPC extends JavaPlugin {
             for(int var4 = 0; var4 < var3; ++var4) {
                 File file = var2[var4];
                 if (file.getName().endsWith(".path")) {
-                    AbstractTypeWriter abstractTypeWriter = AbstractTypeWriter.forFile(file, TypeWriter.MOVEMENT);
+                    NPCPath.AbstractTypeWriter abstractTypeWriter = AbstractTypeWriter.forFile(file, TypeWriter.MOVEMENT);
                     abstractTypeWriter.load();
                 }
             }

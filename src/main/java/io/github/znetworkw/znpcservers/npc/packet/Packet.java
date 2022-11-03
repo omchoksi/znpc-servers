@@ -10,11 +10,12 @@ import io.github.znetworkw.znpcservers.npc.NPC;
 import io.github.znetworkw.znpcservers.npc.NPCType;
 import io.github.znetworkw.znpcservers.utility.ReflectionUtils;
 import io.github.znetworkw.znpcservers.utility.Utils;
+import org.bukkit.inventory.ItemStack;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
-import org.bukkit.inventory.ItemStack;
 
 public interface Packet {
     int version();

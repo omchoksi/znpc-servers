@@ -1,15 +1,15 @@
 package io.github.znetworkw.znpcservers.skin;
 
 public class SkinFetcherBuilder {
-    private final SkinFetcherBuilder.SkinServer apiServer;
+    private final SkinServer apiServer;
     private final String name;
 
-    protected SkinFetcherBuilder(SkinFetcherBuilder.SkinServer apiServer, String name) {
+    protected SkinFetcherBuilder(SkinServer apiServer, String name) {
         this.apiServer = apiServer;
         this.name = name;
     }
 
-    public SkinFetcherBuilder.SkinServer getAPIServer() {
+    public SkinServer getAPIServer() {
         return this.apiServer;
     }
 
@@ -25,7 +25,7 @@ public class SkinFetcherBuilder {
         return this.apiServer == SkinFetcherBuilder.SkinServer.PROFILE_API;
     }
 
-    public static SkinFetcherBuilder create(SkinFetcherBuilder.SkinServer skinAPIURL, String name) {
+    public static SkinFetcherBuilder create(SkinServer skinAPIURL, String name) {
         return new SkinFetcherBuilder(skinAPIURL, name);
     }
 

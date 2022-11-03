@@ -7,6 +7,8 @@ import io.github.znetworkw.znpcservers.npc.NPC;
 import io.github.znetworkw.znpcservers.npc.conversation.ConversationModel;
 import io.github.znetworkw.znpcservers.npc.conversation.ConversationModel.ConversationType;
 import io.github.znetworkw.znpcservers.user.ZUser;
+
+import java.util.Collection;
 import java.util.Iterator;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,47 +20,31 @@ public class NPCManagerTask extends BukkitRunnable {
     }
 
     public void run() {
-        Iterator var1 = NPC.all().iterator();
-
-        label62:
-        while(var1.hasNext()) {
-            NPC npc = (NPC)var1.next();
-            boolean hasPath = npc.getNpcPath() != null;
+        for(NPC npc : NPC.all()) {
+            final boolean hasPath = npc.getNpcPath() != null;
             if (hasPath) {
                 npc.getNpcPath().handle();
             }
-
-            Iterator var4 = Bukkit.getOnlinePlayers().iterator();
-
-            while(true) {
-                while(true) {
-                    if (!var4.hasNext()) {
-                        continue label62;
+            for(Player player : Bukkit.getOnlinePlayers()) {
+                final ZUser zUser = ZUser.find(player);
+                final boolean canSeeNPC = player.getWorld() == npc.getLocation().getWorld() && player.getLocation().distance(npc.getLocation()) <= (double)ConfigurationConstants.VIEW_DISTANCE;
+                if (npc.getViewers().contains(zUser) && !canSeeNPC) {
+                    npc.delete(zUser);
+                } else if (canSeeNPC) {
+                    if (!npc.getViewers().contains(zUser)) {
+                        npc.spawn(zUser);
                     }
-
-                    Player player = (Player)var4.next();
-                    ZUser zUser = ZUser.find(player);
-                    boolean canSeeNPC = player.getWorld() == npc.getLocation().getWorld() && player.getLocation().distance(npc.getLocation()) <= (double)ConfigurationConstants.VIEW_DISTANCE;
-                    if (npc.getViewers().contains(zUser) && !canSeeNPC) {
-                        npc.delete(zUser);
-                    } else if (canSeeNPC) {
-                        if (!npc.getViewers().contains(zUser)) {
-                            npc.spawn(zUser);
-                        }
-
-                        if (FunctionFactory.isTrue(npc, "look") && !hasPath) {
-                            npc.lookAt(zUser, player.getLocation(), false);
-                        }
-
-                        npc.getHologram().updateNames(zUser);
-                        ConversationModel conversationStorage = npc.getNpcPojo().getConversation();
-                        if (conversationStorage != null && conversationStorage.getConversationType() == ConversationType.RADIUS) {
-                            npc.tryStartConversation(player);
-                        }
+                    if (FunctionFactory.isTrue(npc, "look") && !hasPath) {
+                        npc.lookAt(zUser, player.getLocation(), false);
+                    }
+                    npc.getHologram().updateNames(zUser);
+                    ConversationModel conversationStorage = npc.getNpcPojo().getConversation();
+                    if (conversationStorage != null && conversationStorage.getConversationType() == ConversationType.RADIUS) {
+                        npc.tryStartConversation(player);
                     }
                 }
             }
         }
-
     }
+
 }

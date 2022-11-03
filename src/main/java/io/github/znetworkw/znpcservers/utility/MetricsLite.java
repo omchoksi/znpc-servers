@@ -72,7 +72,7 @@ public class MetricsLite {
                 Iterator var7 = Bukkit.getServicesManager().getKnownServices().iterator();
 
                 while(var7.hasNext()) {
-                    Class service = (Class)var7.next();
+                    Class<?> service = (Class)var7.next();
 
                     try {
                         service.getField("B_STATS_VERSION");
@@ -158,14 +158,14 @@ public class MetricsLite {
         Iterator var3 = Bukkit.getServicesManager().getKnownServices().iterator();
 
         while(var3.hasNext()) {
-            Class service = (Class)var3.next();
+            Class<?> service = (Class)var3.next();
 
             try {
                 service.getField("B_STATS_VERSION");
                 Iterator var5 = Bukkit.getServicesManager().getRegistrations(service).iterator();
 
                 while(var5.hasNext()) {
-                    RegisteredServiceProvider provider = (RegisteredServiceProvider)var5.next();
+                    RegisteredServiceProvider<?> provider = (RegisteredServiceProvider)var5.next();
 
                     try {
                         Object plugin = provider.getService().getMethod("getPluginData").invoke(provider.getProvider());

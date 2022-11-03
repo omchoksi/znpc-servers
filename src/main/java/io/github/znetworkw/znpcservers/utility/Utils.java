@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class Utils {
@@ -50,7 +51,7 @@ public final class Utils {
     }
 
     public static void sendTitle(Player player, String title, String subTitle) {
-        player.sendTitle(toColor(title), toColor(subTitle), 0, 10, 1);
+        player.sendTitle(toColor(title), toColor(subTitle));
     }
 
     public static void setValue(Object fieldInstance, String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
@@ -67,8 +68,11 @@ public final class Utils {
 
     public static void sendPackets(ZUser user, Object... packets) {
         try {
+            Object[] var2 = packets;
+            int var3 = packets.length;
 
-            for (Object packet : packets) {
+            for(int var4 = 0; var4 < var3; ++var4) {
+                Object packet = var2[var4];
                 CacheRegistry.SEND_PACKET_METHOD.load().invoke(user.getPlayerConnection(), packet);
             }
         } catch (InvocationTargetException | IllegalAccessException var6) {

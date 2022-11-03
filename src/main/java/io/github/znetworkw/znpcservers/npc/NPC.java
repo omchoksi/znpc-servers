@@ -15,18 +15,15 @@ import io.github.znetworkw.znpcservers.npc.packet.PacketCache;
 import io.github.znetworkw.znpcservers.user.ZUser;
 import io.github.znetworkw.znpcservers.utility.Utils;
 import io.github.znetworkw.znpcservers.utility.location.ZLocation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class NPC {
     private static final ConcurrentMap<Integer, NPC> NPC_MAP = new ConcurrentHashMap();
@@ -212,6 +209,7 @@ public class NPC {
             throw new IllegalStateException(user.getUUID().toString() + " is already a viewer.");
         } else {
             try {
+                Bukkit.getConsoleSender().sendMessage("Spawned NPC: " + this.npcPojo.getLocation().bukkitLocation().toString());
                 boolean npcIsPlayer = this.npcPojo.getNpcType() == NPCType.PLAYER;
                 if (FunctionFactory.isTrue(this, "glow") || npcIsPlayer) {
                     ImmutableList<Object> scoreboardPackets = this.packets.getProxyInstance().updateScoreboard(this);
@@ -312,11 +310,10 @@ public class NPC {
     protected void updateMetadata(Iterable<ZUser> users) {
         try {
             Object metaData = this.packets.getProxyInstance().getMetadataPacket(this.entityID, this.nmsEntity);
-            Iterator var3 = users.iterator();
-
-            while(var3.hasNext()) {
-                ZUser user = (ZUser)var3.next();
-                Utils.sendPackets(user, new Object[]{metaData});
+            Bukkit.getConsoleSender().sendMessage("entity id: " + this.entityID);
+            for (ZUser user : users) {
+                Utils.sendPackets(user, metaData);
+                Bukkit.getConsoleSender().sendMessage("sent metadata packet");
             }
 
         } catch (ReflectiveOperationException var5) {
@@ -350,7 +347,7 @@ public class NPC {
         }
     }
 
-    public void setPath(AbstractTypeWriter typeWriter) {
+    public void setPath(NPCPath.AbstractTypeWriter typeWriter) {
         if (typeWriter == null) {
             this.npcPath = null;
             this.npcPojo.setPathName("none");

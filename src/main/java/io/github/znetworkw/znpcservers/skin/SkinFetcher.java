@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -49,7 +50,7 @@ public class SkinFetcher {
                 }
 
                 try {
-                    InputStreamReader reader = new InputStreamReader(connection.getInputStream(), Charset.forName("UTF-8"));
+                    Reader reader = new InputStreamReader(connection.getInputStream(), Charset.forName("UTF-8"));
 
                     try {
                         completableFuture.complete(JSON_PARSER.parse(reader).getAsJsonObject());

@@ -49,12 +49,18 @@ public enum ConfigurationValue {
     FETCHING_SKIN("messages", "&aFetching skin for name: &f%s&a, wait...", String.class),
     CANT_GET_SKIN("messages", "&ccan't fetch skin with name: %s.", String.class),
     GET_SKIN("messages", "&aSkin fetched.", String.class),
-    CONVERSATION_LIST("conversations", new ArrayList(), Conversation.class);
+    INVALID_ITEM_SLOT("messages" , "&cInvalid item slot.", String.class),
+    NONE_CONVERSATION_NAME("messages", "&cYou cannot use \"none\" as conversation name.", String.class),
+    INVALID_CONVERSATION_NAME("messages", "&cConversation name can't contain spaces", String.class),
+    INVALID_CUSTOMIZE_ARGUMENTS("messages", "&cInvalid arguments for this customization.", String.class),
+    INVALID_CONVERSATION_TYPE("messages", "&cInvalid conversation type.", String.class),
+    ONLY_PLAYER("messages", "&cOnly players can execute this command", String.class),
+    CONVERSATION_LIST("conversations", new ArrayList<>(), Conversation.class);
 
     private final String configName;
     private final Object value;
     private final Class<?> primitiveType;
-    public static final Map<String, ImmutableSet<ConfigurationValue>> VALUES_BY_NAME = (Map)Arrays.stream(values()).collect(Collectors.groupingBy(ConfigurationValue::getConfigName, GuavaCollectors.toImmutableSet()));
+    public static final Map<String, ImmutableSet<ConfigurationValue>> VALUES_BY_NAME = Arrays.stream(values()).collect(Collectors.groupingBy(ConfigurationValue::getConfigName, GuavaCollectors.toImmutableSet()));
 
     private ConfigurationValue(String configName, Object value, Class<?> primitiveType) {
         this.configName = configName;

@@ -15,6 +15,6 @@ public class PacketV19 extends PacketV17 {
     }
 
     public Object getPlayerPacket(Object nmsWorld, GameProfile gameProfile) throws ReflectiveOperationException {
-        return ((Constructor)CacheRegistry.PLAYER_CONSTRUCTOR_NEW_1.load()).newInstance(((Method)CacheRegistry.GET_SERVER_METHOD.load()).invoke(Bukkit.getServer()), nmsWorld, gameProfile, null);
+        return CacheRegistry.PLAYER_CONSTRUCTOR_NEW_1.load().newInstance(((Method)CacheRegistry.GET_SERVER_METHOD.load()).invoke(Bukkit.getServer()), nmsWorld, gameProfile, null);
     }
 }

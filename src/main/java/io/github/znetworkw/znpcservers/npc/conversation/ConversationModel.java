@@ -63,7 +63,7 @@ public class ConversationModel {
     private ConversationModel() {
     }
 
-    public static enum ConversationType {
+    public enum ConversationType {
         RADIUS {
             public boolean canStart(NPC npc, Conversation conversation, Player player) {
                 return player.getWorld() == npc.getLocation().getWorld() && player.getLocation().distance(npc.getLocation()) <= (double)conversation.getRadius();

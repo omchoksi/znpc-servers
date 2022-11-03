@@ -1,14 +1,13 @@
 package io.github.znetworkw.znpcservers.npc.packet;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PacketCache {
@@ -17,7 +16,7 @@ public class PacketCache {
     private final Packet proxyInstance;
 
     public PacketCache(Packet packet) {
-        this.packetResultCache = new ConcurrentHashMap();
+        this.packetResultCache = new ConcurrentHashMap<>();
         this.proxyInstance = this.newProxyInstance(packet);
     }
 
@@ -30,7 +29,7 @@ public class PacketCache {
     }
 
     protected Packet newProxyInstance(Packet packet) {
-        return (Packet)Proxy.newProxyInstance(packet.getClass().getClassLoader(), new Class[]{Packet.class}, new PacketCache.PacketHandler(this, packet));
+        return (Packet)Proxy.newProxyInstance(packet.getClass().getClassLoader(), new Class[]{Packet.class}, new PacketHandler(this, packet));
     }
 
     private Object getOrCache(Packet instance, Method method, Object[] args) {
@@ -50,34 +49,27 @@ public class PacketCache {
     }
 
     public void flushCache(String... strings) {
-        Set<Entry<String, Object>> set = this.packetResultCache.entrySet();
-        String[] var3 = strings;
-        int var4 = strings.length;
+        Set<Map.Entry<String, Object>> set = this.packetResultCache.entrySet();
 
-        for(int var5 = 0; var5 < var4; ++var5) {
-            String string = var3[var5];
+        for (String string : strings) {
             set.removeIf((entry) -> {
-                return ((String)entry.getKey()).startsWith(string);
+                return ((String) entry.getKey()).startsWith(string);
             });
         }
 
     }
 
     public void flushCache() {
-        this.flushCache((String[])VALUE_LOOKUP_BY_NAME.values().stream().map(PacketValue::keyName).toArray((x$0) -> {
-            return new String[x$0];
-        }));
+        this.flushCache((String[])VALUE_LOOKUP_BY_NAME.values().stream().map(PacketValue::keyName).toArray(String[]::new));
     }
 
     static {
-        Builder<Method, PacketValue> methodPacketValueBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<Method, PacketValue> methodPacketValueBuilder = ImmutableMap.builder();
         Method[] var1 = Packet.class.getMethods();
-        int var2 = var1.length;
 
-        for(int var3 = 0; var3 < var2; ++var3) {
-            Method method = var1[var3];
+        for (Method method : var1) {
             if (method.isAnnotationPresent(PacketValue.class)) {
-                methodPacketValueBuilder.put(method, (PacketValue)method.getAnnotation(PacketValue.class));
+                methodPacketValueBuilder.put(method, (PacketValue) method.getAnnotation(PacketValue.class));
             }
         }
 
